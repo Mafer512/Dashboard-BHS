@@ -4,6 +4,8 @@ Prototipo funcional de un **sistema de indicadores operativos para el monitoreo 
 
 Proyecto de residencia profesional. El tablero está orientado al monitoreo, análisis y seguimiento de alarmas e incidencias operativas del BHS.
 
+**▶ Abrir el dashboard en línea: https://mafer512.github.io/Dashboard-BHS/**
+
 > **DATOS DEMO — NO REPRESENTAN EL DESEMPEÑO REAL DEL AIFA.**
 > Los registros precargados son simulados y sirven únicamente para demostrar el funcionamiento del prototipo. Los umbrales, severidades y clasificaciones incluidos son valores DEMO y **no constituyen criterios oficiales del BHS**.
 
@@ -11,9 +13,11 @@ Proyecto de residencia profesional. El tablero está orientado al monitoreo, an�
 
 ## Cómo usarlo
 
-1. Descarga `dashboard_bhs_aifa.html`.
-2. Ábrelo con doble clic en cualquier navegador moderno (Chrome, Edge o Firefox).
-3. No requiere instalación, servidor ni conexión a internet.
+**En línea.** Abre https://mafer512.github.io/Dashboard-BHS/ desde cualquier navegador o teléfono. No requiere instalación ni descarga.
+
+**Sin conexión.** Descarga `dashboard_bhs_aifa.html` y ábrelo con doble clic en cualquier navegador moderno (Chrome, Edge o Firefox). El archivo es autocontenido: funciona sin servidor y sin internet.
+
+> Ambas rutas ejecutan exactamente el mismo archivo. La dirección del sitio (`index.html`) solo redirige al tablero, de modo que no existen copias que sincronizar.
 
 ### Cargar datos reales
 
