@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Operativo BHS – AIFA</title>
+<meta name="description" content="Prototipo de sistema de indicadores operativos para el monitoreo del desempeño en el Sistema de Manejo de Equipaje (BHS) del Aeropuerto Internacional Felipe Ángeles.">
+<!--
+  PUNTO DE ENTRADA DEL SITIO (GitHub Pages)
+
+  El tablero completo vive en un unico archivo autocontenido:
+  dashboard_bhs_aifa.html
+
+  Esta pagina solo redirige hacia el, para que la direccion raiz del sitio
+  abra la aplicacion sin duplicar el archivo del tablero. Asi existe una sola
+  fuente de verdad: cualquier cambio al tablero se refleja aqui sin sincronizar
+  copias. Si la redireccion automatica no se ejecuta, el enlace manual funciona.
+-->
+<meta http-equiv="refresh" content="0; url=dashboard_bhs_aifa.html">
+<link rel="canonical" href="dashboard_bhs_aifa.html">
+<style>
+  :root{
+    --azul-900:#0B2545; --azul-600:#1B5FA8; --azul-100:#E8F0F9;
+    --gris-100:#F1F4F8; --gris-200:#E2E8F0; --gris-600:#5A6779; --gris-800:#2C3644;
+    --amarillo:#F9A825; --amarillo-bg:#FEF6E4;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:var(--gris-100); color:var(--gris-800);
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:24px 16px; line-height:1.5;
+  }
+  .caja{
+    background:#fff; border:1px solid var(--gris-200); border-radius:6px;
+    box-shadow:0 1px 2px rgba(11,37,69,.06), 0 2px 12px rgba(11,37,69,.08);
+    max-width:560px; width:100%; overflow:hidden;
+  }
+  .cab{
+    background:var(--azul-900); color:#fff; padding:16px 20px;
+    display:flex; align-items:center; gap:13px; border-bottom:3px solid var(--azul-600);
+  }
+  .escudo{
+    width:40px; height:40px; flex:0 0 40px; border-radius:4px; background:var(--azul-600);
+    border:1px solid rgba(255,255,255,.25);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:700; font-size:12.5px; letter-spacing:.5px;
+  }
+  .cab .l1{font-size:11px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:#CFE0F2}
+  .cab .l2{font-size:10.5px;letter-spacing:.7px;text-transform:uppercase;color:#93B4D6}
+  .cuerpo{padding:22px 20px}
+  h1{font-size:18px;color:var(--azul-900);letter-spacing:.2px;margin-bottom:4px}
+  .sub{font-size:12.5px;color:var(--gris-600);margin-bottom:18px}
+  .cargando{
+    display:flex; align-items:center; gap:10px;
+    background:var(--azul-100); border-left:4px solid var(--azul-600); border-radius:4px;
+    padding:11px 14px; font-size:12.5px; color:var(--azul-900); margin-bottom:16px;
+  }
+  .punto{
+    width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:var(--azul-600);
+    animation:late 1.1s ease-in-out infinite;
+  }
+  @keyframes late{0%,100%{opacity:.25}50%{opacity:1}}
+  .btn{
+    display:inline-block; background:var(--azul-600); color:#fff; text-decoration:none;
+    padding:10px 18px; border-radius:4px; font-size:12px; font-weight:600;
+    letter-spacing:.6px; text-transform:uppercase;
+  }
+  .btn:hover{background:#164A86}
+  .btn.sec{background:#fff;color:var(--azul-900);border:1px solid var(--gris-200);margin-left:8px}
+  .btn.sec:hover{background:var(--gris-100)}
+  .demo{
+    background:var(--amarillo-bg); border-left:4px solid var(--amarillo); border-radius:4px;
+    padding:11px 14px; font-size:11.5px; color:#6B4E0F; margin-top:18px;
+  }
+  .demo b{display:block;letter-spacing:.4px;margin-bottom:2px}
+  .pie{
+    border-top:1px solid var(--gris-200); padding:12px 20px;
+    font-size:10.5px; color:var(--gris-600); background:#F7F9FC;
+  }
+  @media (max-width:480px){
+    .btn{display:block;text-align:center}
+    .btn.sec{margin-left:0;margin-top:8px}
+  }
+  @media (prefers-reduced-motion:reduce){ .punto{animation:none;opacity:1} }
+</style>
+</head>
+<body>
+  <main class="caja">
+    <div class="cab">
+      <div class="escudo">BHS</div>
+      <div>
+        <div class="l1">Dirección de Operaciones</div>
+        <div class="l2">Sistema de Manejo de Equipaje</div>
+      </div>
+    </div>
+    <div class="cuerpo">
+      <h1>Dashboard Operativo BHS – AIFA</h1>
+      <p class="sub">Sistema de indicadores operativos para el monitoreo del desempeño del Sistema de Manejo de Equipaje del Aeropuerto Internacional Felipe Ángeles.</p>
+
+      <div class="cargando"><span class="punto"></span> Abriendo el tablero…</div>
+
+      <p>
+        <a class="btn" href="dashboard_bhs_aifa.html">Abrir el dashboard</a>
+        <a class="btn sec" href="https://github.com/Mafer512/Dashboard-BHS">Ver el código</a>
+      </p>
+
+      <div class="demo">
+        <b>DATOS DEMO — NO REPRESENTAN EL DESEMPEÑO REAL DEL AIFA</b>
+        Los registros precargados son simulados y sirven únicamente para demostrar el funcionamiento del prototipo. Los umbrales y criterios mostrados son valores DEMO y no constituyen criterios oficiales del BHS.
+      </div>
+    </div>
+    <div class="pie">Prototipo académico · Proyecto de residencia profesional</div>
+  </main>
+</body>
+</html>
