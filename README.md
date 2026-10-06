@@ -32,7 +32,7 @@ Proyecto de residencia profesional. El tablero está orientado al monitoreo, an�
 
 ### Filtros
 
-Barra superior: fecha inicial, fecha final, hora inicial, hora final, coordinador en turno, tipo de alarma y estado de operación. En **Filtros adicionales**: turno, nivel, área/subcategoría, severidad, status y clasificación NAT/IOC.
+Barra superior: fecha inicial, fecha final, hora inicial y hora final. En **Filtros adicionales**: turno, nivel, área/subcategoría, severidad, status y clasificación NAT/IOC.
 
 Los filtros se combinan entre sí. **Aplicar filtros** actualiza KPIs, gráficas, tablas, semáforos y comparaciones temporales; **Limpiar filtros** restablece el rango completo.
 
@@ -44,7 +44,7 @@ Los filtros se combinan entre sí. **Aplicar filtros** actualiza KPIs, gráficas
 
 | Sección | Contenido |
 |---|---|
-| **Resumen** | Los cuatro KPIs principales, frecuencia por tipo de alarma, distribución por severidad y comparación temporal. |
+| **Resumen** | Cuatro KPIs en pestañas: frecuencia de alarmas (selección de nivel y Pareto por tipo), tiempos de paro con desglose NAT/IOC, tiempo de respuesta con consulta por nivel, alarma y turno, y cumplimiento operativo; frecuencia por tipo de alarma, distribución por severidad y comparación temporal. |
 | **Operación** | Tiempos de paro NAT/IOC, frecuencia de paros por día/semana/mes, comportamiento por turno y área, y tabla de alarmas activas. |
 | **Desempeño** | Tiempo de respuesta en cascada Nivel → Área/Subcategoría → Tipo de alarma, histograma de tiempos, cumplimiento diario y fichas técnicas de cada indicador. |
 | **Incidencias** | Totales por tipo, fecha, turno, nivel, área y severidad, con tabla detallada. |
