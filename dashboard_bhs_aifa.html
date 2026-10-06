@@ -1309,6 +1309,7 @@ var PENDIENTES = [
 var PALETA = ["#1B5FA8", "#3E86C9", "#F9A825", "#C62828", "#2E7D32", "#6A7B8C", "#7E57C2", "#00897B", "#EF6C00", "#455A64"];
 var COLOR_NAT = "#1B5FA8";
 var COLOR_IOC = "#F9A825";
+var COLOR_IOC_PARO_TIEMPO = "#C62828";
 var COLOR_SEVERIDAD = { "CRITICA": "#C62828", "MEDIA": "#F9A825", "BAJA": "#2E7D32" };
 /* =====================================================================================
    BLOQUE 2 - UTILIDADES GENERALES (fechas, horas, formato, DOM)
@@ -3518,7 +3519,7 @@ function renderOperacion() {
   var formato = metrica === "conteo" ? "entero" : "minutos";
   var seriesParo = [
     { nombre: "NAT", datos: serieParo("NAT"), color: COLOR_NAT },
-    { nombre: "IOC", datos: serieParo("IOC"), color: COLOR_IOC }
+    { nombre: "IOC", datos: serieParo("IOC"), color: COLOR_IOC_PARO_TIEMPO }
   ];
   renderGrafica("gParoTiempo", {
     tipo: "lineas", area: true,
