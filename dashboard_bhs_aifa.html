@@ -282,8 +282,14 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
 .tabla-simple td{padding:7px 9px;border-bottom:1px solid var(--gris-200)}
 .tabla-simple td.num,.tabla-simple th.num{text-align:right;font-variant-numeric:tabular-nums}
 .tabla-simple tfoot td{font-weight:700;border-top:2px solid var(--gris-300);border-bottom:0;background:var(--gris-050)}
-#tablaTurnoKpi3 th{width:30%}
-#tablaTurnoKpi3 th:last-child{width:40%;font-size:12px}
+#kpi3Distribucion{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px}
+#listaRespuestaKpi3{max-height:290px;overflow-y:auto}
+#listaRespuestaKpi3 li[data-sector]{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:8px;padding:8px 6px}
+#listaRespuestaKpi3 li.activa{background:var(--azul-100)}
+#listaRespuestaKpi3 .muestra{width:10px;height:10px;border-radius:2px}
+#listaRespuestaKpi3 .nm{white-space:normal;overflow-wrap:anywhere}
+#listaRespuestaKpi3 small{display:block;font-size:11px;color:var(--gris-600);margin-top:3px}
+#listaRespuestaKpi3 .vl{font-size:20px;white-space:nowrap}
 
 /* ---------- CARGA DE ARCHIVO ---------- */
 .zona-carga{
@@ -375,10 +381,6 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="8"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="11" width="7" height="10"/><rect x="3" y="14" width="7" height="7"/></svg>
       Resumen
     </button>
-    <button class="nav-item" data-seccion="operacion">
-      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg>
-      Operaci&oacute;n
-    </button>
     <button class="nav-item" data-seccion="desempeno">
       <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>
       Desempe&ntilde;o
@@ -456,8 +458,8 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
       <div class="kpi-tabs" role="tablist" aria-label="Indicadores principales">
         <button type="button" class="kpi-tab activa" role="tab" id="tabKpi1" data-kpi="1" aria-controls="panelKpi1" aria-selected="true" tabindex="0"><span class="tab-pt" id="tabKpi1Pt"></span>KPI 1 &middot; Frecuencia de alarmas</button>
         <button type="button" class="kpi-tab" role="tab" id="tabKpi3" data-kpi="3" aria-controls="panelKpi3" aria-selected="false" tabindex="-1"><span class="tab-pt" id="tabKpi3Pt"></span>KPI 2 &middot; Tiempo de respuesta</button>
-        <button type="button" class="kpi-tab" role="tab" id="tabKpi2" data-kpi="2" aria-controls="panelKpi2" aria-selected="false" tabindex="-1"><span class="tab-pt" id="tabKpi2Pt"></span>KPI 3 &middot; Tiempos de paro</button>
-        <button type="button" class="kpi-tab" role="tab" id="tabKpi4" data-kpi="4" aria-controls="panelKpi4" aria-selected="false" tabindex="-1"><span class="tab-pt" id="tabKpi4Pt"></span>KPI 4 &middot; Cumplimiento operativo</button>
+        <button type="button" class="kpi-tab" role="tab" id="tabKpi2" data-kpi="2" aria-controls="panelKpi2" aria-selected="false" tabindex="-1"><span class="tab-pt" id="tabKpi2Pt"></span>KPI 3 y 4</button>
+        <button type="button" class="kpi-tab" role="tab" id="tabKpi4" data-kpi="4" aria-controls="panelKpi4" aria-selected="false" tabindex="-1"><span class="tab-pt" id="tabKpi4Pt"></span>KPI 4 &middot; Tiempos de paro totales</button>
       </div>
       <div class="kpi-panel" role="tabpanel" id="panelKpi1" aria-labelledby="tabKpi1">
         <!-- KPI 1 -->
@@ -466,6 +468,7 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
             <h3>KPI 1 &middot; Frecuencia de alarmas<span class="ayuda" title="N&uacute;mero de activaciones registradas para el nivel y la alarma seleccionados durante el periodo filtrado. Unidad: activaciones.">?</span></h3>
             <span class="sem sem-nd" id="kpi1Sem"><span class="pt"></span>N/D</span>
           </div>
+          <div class="kpi-sub">Alarmas de paros parciales que desplazan al personal</div>
           <div class="kpi-cuerpo">
             <div class="kpi-datos">
               <div class="kpi-valor" id="kpi1Valor">0<small>activaciones</small></div>
@@ -502,8 +505,12 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
         <!-- KPI 2 -->
         <article class="kpi" id="kpi2">
           <div class="kpi-top">
-            <h3>KPI 3 &middot; Tiempos de paro<span class="ayuda" title="Suma de la duraci&oacute;n de los eventos clasificados como NAT o IOC. La definici&oacute;n formal de paro total est&aacute; PENDIENTE DE DEFINICION con base en documentaci&oacute;n t&eacute;cnica del BHS.">?</span></h3>
+            <h3>KPI 3 y 4 &middot; Frecuencia y tiempos de paro totales<span class="ayuda" title="Suma de la duraci&oacute;n de los eventos clasificados como NAT o IOC. La definici&oacute;n formal de paro total est&aacute; PENDIENTE DE DEFINICION con base en documentaci&oacute;n t&eacute;cnica del BHS.">?</span></h3>
             <span class="sem sem-nd" id="kpi2Sem"><span class="pt"></span>N/D</span>
+          </div>
+          <div class="kpi3-controles">
+            <div class="campo"><label for="kpi2Anio">A&Ntilde;O</label><select id="kpi2Anio"></select></div>
+            <div class="campo"><label for="kpi2Mes">MES</label><select id="kpi2Mes"></select></div>
           </div>
           <div class="kpi-cuerpo">
             <div class="kpi-datos">
@@ -518,9 +525,14 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
               </div>
             </div>
             <div class="kpi-extra">
-              <div class="kpi-extra-tit">Desglose por tipo de paro</div>
-              <div class="tabla-envoltura"><table class="tabla-simple" id="tablaParoKpi2"></table></div>
-              <div class="kpi-nota" id="kpi2Nota">&ndash;</div>
+              <div class="kpi-extra-tit" id="kpi2CajasTitulo"></div>
+              <div class="graf-caja"><canvas id="gCajasParo" role="img" aria-label="Distribuci&oacute;n mensual de la duraci&oacute;n de paros NAT e IOC, con frecuencia y tiempo acumulado"></canvas></div>
+              <div class="kpi-nota" id="notaCajasParo"></div>
+              <div id="kpi2Desglose" hidden>
+                <div class="kpi-extra-tit">FRECUENCIA DE TIEMPOS DE PARO TOTALES</div>
+                <div class="tabla-envoltura"><table class="tabla-simple" id="tablaParoKpi2"></table></div>
+                <div class="kpi-nota" id="kpi2Nota">&ndash;</div>
+              </div>
             </div>
           </div>
         </article>
@@ -545,6 +557,7 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
                 <div>M&aacute;ximo<b id="kpi3Max">&ndash;</b></div>
                 <div>Tiempo total acumulado<b id="kpi3Total">&ndash;</b></div>
                 <div>Mediana<b id="kpi3Mediana">&ndash;</b></div>
+                <div>Mantenimiento<b id="kpi3Mantenimiento">&ndash;</b></div>
               </div>
             </div>
             <div class="kpi-extra">
@@ -554,7 +567,14 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
                 <div class="campo"><label for="kpi3Seccion">Secci&oacute;n</label><select id="kpi3Seccion"></select></div>
                 <div class="campo"><label for="kpi3Alarma">Tipo de alarma</label><select id="kpi3Alarma"></select></div>
               </div>
-              <div class="tabla-envoltura"><table class="tabla-simple" id="tablaTurnoKpi3"></table></div>
+              <div id="kpi3Distribucion">
+                <div>
+                  <div class="kpi-extra-tit">Tiempo promedio y frecuencia de alarmas</div>
+                  <div class="graf-caja"><canvas id="gBarrasRespuesta" role="img" aria-label="Tiempo de respuesta promedio y activaciones por tipo de alarma"></canvas></div>
+                  <div class="kpi-nota" id="notaBarrasRespuesta"></div>
+                </div>
+                <div><div class="kpi-extra-tit">Tiempo de respuesta promedio</div><ol class="lista-rank" id="listaRespuestaKpi3"></ol></div>
+              </div>
               <div class="kpi-nota" id="kpi3Nota">&ndash;</div>
             </div>
           </div>
@@ -565,7 +585,7 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
         <!-- KPI 4 -->
         <article class="kpi" id="kpi4">
           <div class="kpi-top">
-            <h3>KPI 4 &middot; Cumplimiento operativo<span class="ayuda" title="Porcentaje de registros resueltos cuyo tiempo de respuesta es menor o igual al objetivo DEMO. El objetivo oficial est&aacute; PENDIENTE DE DEFINICION.">?</span></h3>
+            <h3>KPI 4 &middot; Tiempos de paro totales<span class="ayuda" title="Porcentaje de registros resueltos cuyo tiempo de respuesta es menor o igual al objetivo DEMO. El objetivo oficial est&aacute; PENDIENTE DE DEFINICION.">?</span></h3>
             <span class="sem sem-nd" id="kpi4Sem"><span class="pt"></span>N/D</span>
           </div>
           <div class="kpi-cuerpo">
@@ -598,24 +618,6 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
         <div class="mini"><span>Alarmas por d&iacute;a</span><b id="mPorDia">0</b><em>promedio</em></div>
         <div class="mini"><span>Registros con error</span><b id="mErrores">0</b><em>validaci&oacute;n de datos</em></div>
       </div>
-
-      <!-- 11. GRAFICA FRECUENCIA DE ALARMAS -->
-      <section class="panel">
-        <div class="panel-cab">
-          <h2>Frecuencia de alarmas por tipo</h2>
-          <span class="sub">Eje X: tipo de alarma &middot; Eje Y: n&uacute;mero de activaciones</span>
-          <div class="der">
-            <select id="selTopFrecuencia" class="btn btn-secundario btn-mini" style="text-transform:none;letter-spacing:0">
-              <option value="10">Top 10</option>
-              <option value="15">Top 15</option>
-              <option value="0">Todas</option>
-            </select>
-          </div>
-        </div>
-        <div class="panel-cuerpo">
-          <div class="graf-caja alta"><canvas id="gFrecuencia"></canvas></div>
-        </div>
-      </section>
 
       <div class="rejilla-2">
         <section class="panel">
@@ -656,94 +658,6 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
       </section>
     </div>
 
-    <!-- ============================ SECCION: OPERACION ============================ -->
-    <div class="seccion" id="sec-operacion">
-      <div class="titulo-seccion">
-        <h2>Operaci&oacute;n</h2>
-        <p>Tiempos de paro, frecuencia de paros, comportamiento por turno y alarmas activas</p>
-      </div>
-
-      <div class="mini-grid">
-        <div class="mini"><span>Tiempo de paro total</span><b id="oParoTotal">0</b><em>NAT + IOC</em></div>
-        <div class="mini"><span>Paro promedio</span><b id="oParoProm">0</b><em>por evento</em></div>
-        <div class="mini"><span>Activaciones NAT</span><b id="oNat">0</b><em id="oNatPct">&ndash;</em></div>
-        <div class="mini"><span>Activaciones IOC</span><b id="oIoc">0</b><em id="oIocPct">&ndash;</em></div>
-        <div class="mini"><span>Paro m&aacute;ximo</span><b id="oParoMax">0</b><em>evento individual</em></div>
-        <div class="mini"><span>Alarmas activas</span><b id="oActivas" style="color:var(--rojo)">0</b><em>en seguimiento</em></div>
-      </div>
-
-      <!-- 12. GRAFICA TIEMPOS DE PARO -->
-      <section class="panel">
-        <div class="panel-cab">
-          <h2>Comportamiento de tiempos de paro (NAT / IOC)</h2>
-          <div class="der">
-            <select id="selMetricaParo" class="btn btn-secundario btn-mini" style="text-transform:none;letter-spacing:0">
-              <option value="total">Tiempo total (min)</option>
-              <option value="promedio">Tiempo promedio (min)</option>
-              <option value="conteo">N&uacute;mero de activaciones</option>
-            </select>
-            <select id="selEscalaParo" class="btn btn-secundario btn-mini" style="text-transform:none;letter-spacing:0">
-              <option value="dia">Por d&iacute;a</option>
-              <option value="semana">Por semana</option>
-              <option value="mes">Por mes</option>
-            </select>
-          </div>
-        </div>
-        <div class="panel-cuerpo">
-          <div class="graf-caja alta"><canvas id="gParoTiempo"></canvas></div>
-          <div class="leyenda" id="legParoTiempo"></div>
-        </div>
-      </section>
-
-      <!-- 13. GRAFICA FRECUENCIA DE PAROS -->
-      <section class="panel">
-        <div class="panel-cab">
-          <h2>Frecuencia de paros NAT / IOC</h2>
-          <span class="sub">Usa la misma escala temporal seleccionada arriba</span>
-        </div>
-        <div class="panel-cuerpo">
-          <div class="graf-caja"><canvas id="gParoFrecuencia"></canvas></div>
-          <div class="leyenda" id="legParoFrecuencia"></div>
-        </div>
-      </section>
-
-      <!-- 8. TURNOS -->
-      <div class="rejilla-2">
-        <section class="panel">
-          <div class="panel-cab"><h2>Comportamiento por turno</h2><span class="sub">Turnos de 12 horas</span></div>
-          <div class="panel-cuerpo">
-            <div class="graf-caja baja"><canvas id="gTurnos"></canvas></div>
-            <div class="leyenda" id="legTurnos"></div>
-          </div>
-        </section>
-        <section class="panel">
-          <div class="panel-cab"><h2>Incidencias por &aacute;rea</h2></div>
-          <div class="panel-cuerpo">
-            <div class="graf-caja baja"><canvas id="gAreaOperacion"></canvas></div>
-          </div>
-        </section>
-      </div>
-
-      <!-- 32. ALARMAS ACTIVAS -->
-      <section class="panel">
-        <div class="panel-cab">
-          <h2>Alarmas activas</h2>
-          <span class="sub">Registros con hora de activaci&oacute;n y sin hora de restablecimiento. No se calcula tiempo de respuesta.</span>
-        </div>
-        <div class="panel-cuerpo sin-pad">
-          <div class="tabla-envoltura">
-            <table class="datos" id="tablaActivas" style="min-width:820px"></table>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="panel-cab"><h2>Resumen por turno</h2></div>
-        <div class="panel-cuerpo sin-pad">
-          <div class="tabla-envoltura"><table class="tabla-simple" id="tablaTurnos" style="min-width:680px"></table></div>
-        </div>
-      </section>
-    </div>
     <!-- ============================ SECCION: DESEMPENO ============================ -->
     <div class="seccion" id="sec-desempeno">
       <div class="titulo-seccion">
@@ -838,29 +752,10 @@ table.datos td.num{text-align:right;font-variant-numeric:tabular-nums}
         <div class="mini"><span>Tiempo total de atenci&oacute;n</span><b id="iTiempoTotal">0</b><em>minutos acumulados</em></div>
       </div>
 
-      <div class="rejilla-2">
-        <section class="panel">
-          <div class="panel-cab"><h2>Incidencias por tipo de alarma</h2></div>
-          <div class="panel-cuerpo"><div class="graf-caja alta"><canvas id="gIncTipo"></canvas></div></div>
-        </section>
-        <section class="panel">
-          <div class="panel-cab"><h2>Incidencias por fecha</h2></div>
-          <div class="panel-cuerpo"><div class="graf-caja alta"><canvas id="gIncFecha"></canvas></div></div>
-        </section>
-      </div>
-
       <div class="rejilla-3">
-        <section class="panel">
-          <div class="panel-cab"><h2>Por turno</h2></div>
-          <div class="panel-cuerpo"><div class="graf-caja baja"><canvas id="gIncTurno"></canvas></div></div>
-        </section>
         <section class="panel">
           <div class="panel-cab"><h2>Por nivel</h2></div>
           <div class="panel-cuerpo"><div class="graf-caja baja"><canvas id="gIncNivel"></canvas></div></div>
-        </section>
-        <section class="panel">
-          <div class="panel-cab"><h2>Por &aacute;rea</h2></div>
-          <div class="panel-cuerpo"><div class="graf-caja baja"><canvas id="gIncArea"></canvas></div></div>
         </section>
       </div>
 
@@ -3096,6 +2991,8 @@ var CONFIG_APP = {
   maxHorasEvento: 24
 };
 
+const UMBRAL_MANTENIMIENTO_MIN = 15;
+
 /* -------------------------------------------------------------------------------------
    8. TURNOS - Turnos de 12 horas. Logica aislada para poder modificarla despues.
    ------------------------------------------------------------------------------------- */
@@ -3199,8 +3096,14 @@ var FORMULAS = {
   },
   /* KPI 3 - Tiempo de respuesta = hora de restablecimiento - hora de activacion.
      Se calcula en la funcion minutosEntre(); aqui se declara la regla de exclusion. */
+  esMantenimiento: function (reg) {
+    return !reg.activa && !!reg.horaRestablecimiento && reg.tiempoRespuesta > UMBRAL_MANTENIMIENTO_MIN
+      && reg.clasificacion !== "NAT" && reg.clasificacion !== "IOC"
+      && reg.tipoAlarma !== "NAT" && reg.tipoAlarma !== "IOC";
+  },
   incluyeEnTiempoRespuesta: function (reg) {
-    return reg.tiempoRespuesta !== null && reg.tiempoRespuesta >= 0;
+    return !reg.activa && !!reg.horaRestablecimiento && reg.tiempoRespuesta !== null
+      && reg.tiempoRespuesta >= 0 && !FORMULAS.esMantenimiento(reg);
   },
   /* KPI 4 - Cumplimiento operativo.
      DEFINICION DEMO: un registro cumple si su tiempo de respuesta es menor o igual al
@@ -3253,6 +3156,7 @@ var ETIQUETAS_CAMPO = {
   nivel: "Nivel",
   area: "Area / Subcategoria",
   clasificacion: "NAT / IOC",
+  clasificacionAlarma: "Clasificaci\u00f3n",
   tiempoParo: "Tiempo de paro (min)",
   tiempoRespuesta: "Tiempo de respuesta (min)",
   status: "Status",
@@ -3295,7 +3199,7 @@ var FICHAS_INDICADORES = [
     fuente: "Registro historico de alarmas.",
     campos: "fecha, horaActivacion, horaRestablecimiento, nivel, area, tipoAlarma.",
     umbral: "DEMO: hasta " + UMBRALES.tiempoRespuesta.normal + " min = normal; hasta " + UMBRALES.tiempoRespuesta.atencion + " min = atencion; por encima = critico.",
-    interpretacion: "Se analiza por nivel, area y tipo de alarma de forma independiente. Los registros sin restablecimiento se excluyen del calculo y se reportan como alarmas activas."
+    interpretacion: "Se analiza por nivel, area y tipo de alarma de forma independiente. Los registros sin restablecimiento se excluyen del calculo y se reportan como alarmas activas. Se excluyen de los tiempos de respuesta las alarmas con duracion mayor a " + UMBRAL_MANTENIMIENTO_MIN + " min (Mantenimiento), salvo NAT e IOC."
   },
   {
     nombre: "Cumplimiento operativo",
@@ -3337,7 +3241,6 @@ var PENDIENTES = [
 var PALETA = ["#1B5FA8", "#3E86C9", "#F9A825", "#C62828", "#2E7D32", "#6A7B8C", "#7E57C2", "#00897B", "#EF6C00", "#455A64"];
 var COLOR_NAT = "#1B5FA8";
 var COLOR_IOC = "#F9A825";
-var COLOR_IOC_PARO_TIEMPO = "#C62828";
 var COLOR_SEVERIDAD = { "CRITICA": "#C62828", "MEDIA": "#F9A825", "BAJA": "#2E7D32" };
 /* =====================================================================================
    BLOQUE 2 - UTILIDADES GENERALES (fechas, horas, formato, DOM)
@@ -3967,10 +3870,9 @@ var ESTADO = {
     nivelRespuesta: "__TODOS__",
     seccionRespuesta: "__TODAS__",
     alarmaRespuesta: "__TODAS__",
+    anioParo: "",
+    mesParo: "",
     kpiTab: "1",
-    topFrecuencia: 10,
-    metricaParo: "total",
-    escalaParo: "dia",
     comparacion: "equivalente",
     nivelDes: "__TODOS__",
     areaDes: "__TODAS__",
@@ -4032,9 +3934,9 @@ function filtrosSinFecha() {
 }
 
 /* 16. Ventanas de comparacion temporal */
-function ventanasComparacion(modo) {
-  var fin = ESTADO.filtros.fechaFin || ESTADO.rangoDatos.fin;
-  var ini = ESTADO.filtros.fechaIni || ESTADO.rangoDatos.ini;
+function ventanasComparacion(modo, periodo) {
+  var fin = periodo ? periodo.fin : ESTADO.filtros.fechaFin || ESTADO.rangoDatos.fin;
+  var ini = periodo ? periodo.ini : ESTADO.filtros.fechaIni || ESTADO.rangoDatos.ini;
   if (!fin || !ini) return null;
   var dias, actual, previo;
   if (modo === "dia") {
@@ -4071,7 +3973,7 @@ function registrosEnVentana(ventana) {
 function calcularIndicadores(regs) {
   var i, r;
   var resueltos = [], activas = [], enAtencion = [], criticas = [], conError = [];
-  var tiempos = [], paroNat = [], paroIoc = [];
+  var tiempos = [], mantenimiento = [], paroNat = [], paroIoc = [];
   var diasSet = {};
 
   for (i = 0; i < regs.length; i++) {
@@ -4080,7 +3982,9 @@ function calcularIndicadores(regs) {
     if (r.activa) activas.push(r);
     if (r.status === "EN ATENCION") enAtencion.push(r);
     if (r.severidad === "CRITICA") criticas.push(r);
-    if (FORMULAS.incluyeEnTiempoRespuesta(r)) { resueltos.push(r); tiempos.push(r.tiempoRespuesta); }
+    if (r.tiempoRespuesta !== null && r.tiempoRespuesta >= 0) resueltos.push(r);
+    if (FORMULAS.incluyeEnTiempoRespuesta(r)) tiempos.push(r.tiempoRespuesta);
+    if (FORMULAS.esMantenimiento(r)) mantenimiento.push(r.tiempoRespuesta);
     if (r.clasificacion === "NAT") paroNat.push(r);
     if (r.clasificacion === "IOC") paroIoc.push(r);
     var f = r.fechaOperativa || r.fecha;
@@ -4091,7 +3995,7 @@ function calcularIndicadores(regs) {
   var minNat = paroNat.map(function (x) { return x.tiempoParo; });
   var minIoc = paroIoc.map(function (x) { return x.tiempoParo; });
   var eventosParo = paroNat.concat(paroIoc);
-  var minParo = eventosParo.filter(FORMULAS.incluyeEnTiempoRespuesta).map(function (x) { return x.tiempoParo; });
+  var minParo = eventosParo.filter(function (r) { return r.tiempoRespuesta !== null && r.tiempoRespuesta >= 0; }).map(function (x) { return x.tiempoParo; });
 
   // KPI 4 - cumplimiento
   var dentro = 0, fuera = 0;
@@ -4118,6 +4022,8 @@ function calcularIndicadores(regs) {
     trTotal: suma(tiempos),
     trMediana: mediana(tiempos),
     trPctCalculado: porcentaje(tiempos.length, regs.length),
+    mantenimientoN: mantenimiento.length,
+    mantenimientoTotal: suma(mantenimiento),
     // Tiempo de paro
     paroTotal: suma(minParo),
     paroProm: minParo.length ? suma(minParo) / minParo.length : null,
@@ -4262,6 +4168,7 @@ function renderGrafica(idCanvas, spec) {
 }
 
 function dibujarGrafica(cv, spec) {
+  if (spec && (spec.ejeXCategorias || cv._etiquetasX)) prepararEtiquetasX(cv, spec);
   var ancho = cv.clientWidth, alto = cv.clientHeight;
   if (!ancho || !alto) return;                       // canvas oculto: se dibuja al mostrarse
   var dpr = window.devicePixelRatio || 1;
@@ -4272,6 +4179,9 @@ function dibujarGrafica(cv, spec) {
   ctx.clearRect(0, 0, ancho, alto);
   cv._zonas = [];
   cv._dona = null;
+
+  if (spec && spec.tipo === "cajas") { dibujarCajas(cv, ctx, spec, ancho, alto); return; }
+  if (spec && spec.tipo === "barrasH" && spec.etiquetasCompletas) { dibujarBarrasHCompletas(cv, ctx, spec, ancho, alto); return; }
 
   var hayDatos = spec && spec.labels && spec.labels.length > 0;
   if (hayDatos && spec.tipo !== "dona") {
@@ -4329,11 +4239,49 @@ function recortarTexto(ctx, txt, ancho) {
   return txt + "...";
 }
 
+/* Etiquetas completas, ajustadas por palabras dentro del espacio disponible. */
+function lineasTexto(ctx, texto, ancho) {
+  var lineas = [], linea = "";
+  String(texto).split(/\s+/).forEach(function (palabra) {
+    if (linea && ctx.measureText(linea + " " + palabra).width > ancho) { lineas.push(linea); linea = ""; }
+    while (ctx.measureText(palabra).width > ancho && palabra.length > 1) {
+      var corte = palabra.length - 1;
+      while (corte > 1 && ctx.measureText(palabra.slice(0, corte)).width > ancho) corte--;
+      lineas.push(palabra.slice(0, corte)); palabra = palabra.slice(corte);
+    }
+    linea += (linea ? " " : "") + palabra;
+  });
+  if (linea) lineas.push(linea);
+  return lineas;
+}
+function prepararEtiquetasX(cv, spec) {
+  var caja = cv.parentElement;
+  if (!caja.clientWidth) return;
+  var base = cv._etiquetasX ? cv._etiquetasX.base : caja.clientHeight;
+  cv.style.width = cv.style.height = caja.style.height = caja.style.overflowX = "";
+  cv._etiquetasX = null;
+  if (!spec.ejeXCategorias || !spec.labels.length) return;
+  var ctx = cv.getContext("2d"); ctx.font = "11px 'Segoe UI', Arial, sans-serif";
+  var palabraMax = 0;
+  spec.labels.forEach(function (txt) { String(txt).split(/\s+/).forEach(function (p) { palabraMax = Math.max(palabraMax, ctx.measureText(p).width); }); });
+  var margenes = (spec.ejeYTitulo ? 66 : 58) + (spec.acumulado ? 58 : 14);
+  var ancho = Math.max(caja.clientWidth, Math.ceil(margenes + (palabraMax + 12) * spec.labels.length));
+  var banda = (ancho - margenes) / spec.labels.length;
+  var lineas = spec.labels.map(function (txt) { return lineasTexto(ctx, txt, banda - 12); });
+  var padInf = Math.max(40, 26 + Math.max.apply(null, lineas.map(function (ls) { return ls.length; })) * 14);
+  var alto = base + padInf - 40;
+  cv._etiquetasX = { base: base, lineas: lineas, padInf: padInf };
+  cv.style.width = ancho + "px"; cv.style.height = alto + "px";
+  caja.style.height = (alto + (ancho > caja.clientWidth ? 18 : 0)) + "px";
+  caja.style.overflowX = "auto";
+}
+
 /* ---------- Graficas cartesianas: barras y lineas ---------- */
 function dibujarCartesiana(cv, ctx, spec, w, h) {
   var series = spec.series, labels = spec.labels;
-  var rotar = spec.rotarEtiquetas !== false && (labels.length > 7 || spec.etiquetasLargas);
+  var rotar = !spec.ejeXCategorias && spec.rotarEtiquetas !== false && (labels.length > 7 || spec.etiquetasLargas);
   var padIzq = 58, padDer = spec.acumulado ? 58 : 14, padSup = 16, padInf = rotar ? 78 : 40;
+  if (cv._etiquetasX) padInf = cv._etiquetasX.padInf;
   if (spec.ejeYTitulo) padIzq = 66;
   var plotW = w - padIzq - padDer, plotH = h - padSup - padInf;
   if (plotW <= 20 || plotH <= 20) { dibujarVacio(ctx, w, h); return; }
@@ -4384,9 +4332,12 @@ function dibujarCartesiana(cv, ctx, spec, w, h) {
   ctx.fillStyle = "#5A6779";
   var saltoX = Math.ceil(labels.length / Math.max(1, Math.floor(plotW / (rotar ? 26 : 62))));
   for (i = 0; i < labels.length; i++) {
-    if (i % saltoX !== 0 && labels.length > 12) continue;
+    if (!spec.ejeXCategorias && i % saltoX !== 0 && labels.length > 12) continue;
     var cx = padIzq + banda * (i + 0.5);
-    if (rotar) {
+    if (cv._etiquetasX) {
+      ctx.textAlign = "center";
+      cv._etiquetasX.lineas[i].forEach(function (linea, n) { ctx.fillText(linea, cx, padSup + plotH + 16 + n * 14); });
+    } else if (rotar) {
       ctx.save();
       ctx.translate(cx, padSup + plotH + 10);
       ctx.rotate(-Math.PI / 4);
@@ -4583,14 +4534,120 @@ function dibujarBarrasH(cv, ctx, spec, w, h) {
   ctx.textAlign = "start";
 }
 
+/* Barras de respuesta: nombres completos, tiempo y frecuencia visibles. */
+function dibujarBarrasHCompletas(cv, ctx, spec, w, h) {
+  var caja = cv.parentElement, ancho = Math.max(380, caja.clientWidth);
+  var izq = Math.min(190, ancho * 0.43), der = 12, sup = 16, plotW = ancho - izq - der;
+  ctx.font = "11px 'Segoe UI', Arial, sans-serif";
+  var filas = spec.labels.map(function (nombre, i) {
+    var lineas = lineasTexto(ctx, nombre, izq - 16);
+    var valor = lineasTexto(ctx, numero(spec.series[0].datos[i], 1) + " min · " + numero(spec.frecuencias[i]) + " activaciones", plotW);
+    return { lineas: lineas, valor: valor, alto: Math.max(lineas.length * 14 + 12, valor.length * 14 + 30) };
+  });
+  var plotH = suma(filas.map(function (f) { return f.alto; }));
+  var alto = Math.max(230, sup + plotH + 48);
+  if (w !== ancho || h !== alto) {
+    cv.style.width = ancho + "px"; cv.style.height = alto + "px";
+    caja.style.height = (alto + (ancho > caja.clientWidth ? 18 : 0)) + "px";
+    caja.style.overflowX = "auto"; dibujarGrafica(cv, spec); return;
+  }
+  if (!filas.length) { dibujarVacio(ctx, ancho, alto); return; }
+  var escala = escalaEje(maximo(spec.series[0].datos));
+  ctx.textBaseline = "middle"; ctx.strokeStyle = "#EDF1F6"; ctx.lineWidth = 1;
+  for (var tick = 0; tick <= 4; tick++) {
+    var x = izq + plotW * tick / 4;
+    ctx.beginPath(); ctx.moveTo(x, sup); ctx.lineTo(x, sup + plotH); ctx.stroke();
+    ctx.fillStyle = "#5A6779"; ctx.textAlign = tick === 4 ? "right" : "center";
+    ctx.fillText(numero(escala.top * tick / 4, 1), x, sup + plotH + 12);
+  }
+  ctx.textAlign = "center"; ctx.fillText("Tiempo promedio (minutos)", izq + plotW / 2, sup + plotH + 32);
+  var top = sup;
+  filas.forEach(function (f, i) {
+    var cy = top + f.alto / 2, barY = top + f.alto - 14;
+    ctx.fillStyle = "#5A6779"; ctx.textAlign = "right";
+    f.lineas.forEach(function (linea, j) { ctx.fillText(linea, izq - 10, cy + (j - (f.lineas.length - 1) / 2) * 14); });
+    ctx.fillStyle = "#EDF1F6"; ctx.fillRect(izq, barY, plotW, 10);
+    ctx.fillStyle = spec.series[0].color || PALETA[0];
+    ctx.fillRect(izq, barY, spec.series[0].datos[i] / escala.top * plotW, 10);
+    ctx.fillStyle = "#2C3644"; ctx.textAlign = "left";
+    f.valor.forEach(function (linea, j) { ctx.fillText(linea, izq, barY - 10 - (f.valor.length - 1 - j) * 14); });
+    cv._zonas.push({ x: 0, y: top, w: ancho, h: f.alto, idx: i, html: tooltipPunto(spec, 0, i) });
+    top += f.alto;
+  });
+}
+
+/* Cuartiles con interpolacion lineal (n - 1) * p; bigotes de Tukey, 1.5 * IQR. */
+function estadisticasCaja(duraciones) {
+  if (!duraciones.length) return null;
+  var valores = duraciones.slice().sort(function (a, b) { return a - b; });
+  function cuantil(p) {
+    var posicion = (valores.length - 1) * p, inferior = Math.floor(posicion), fraccion = posicion - inferior;
+    return valores[inferior] + fraccion * (valores[Math.min(inferior + 1, valores.length - 1)] - valores[inferior]);
+  }
+  var q1 = cuantil(0.25), q3 = cuantil(0.75), iqr = q3 - q1;
+  var dentro = valores.filter(function (v) { return v >= q1 - 1.5 * iqr && v <= q3 + 1.5 * iqr; });
+  return { min: valores[0], q1: q1, mediana: cuantil(0.5), q3: q3, max: valores[valores.length - 1],
+    bigoteMin: dentro[0], bigoteMax: dentro[dentro.length - 1],
+    atipicos: valores.filter(function (v) { return v < q1 - 1.5 * iqr || v > q3 + 1.5 * iqr; }) };
+}
+function dibujarCajas(cv, ctx, spec, w, h) {
+  var cont = cv.parentElement, izq = 66, der = 14, sup = 16, plotH = 240;
+  ctx.font = "11px 'Segoe UI', Arial, sans-serif";
+  var anchoMes = Math.max(66, maximo(spec.labels.map(function (mes) { return ctx.measureText(mes).width + 12; })) || 0);
+  var ancho = Math.max(cont.clientWidth, Math.ceil(izq + der + anchoMes * spec.labels.length));
+  var plotW = ancho - izq - der, banda = plotW / spec.labels.length;
+  var etiquetas = spec.labels.map(function (mes, i) {
+    return [mes].concat(lineasTexto(ctx, numero(spec.resumenes[i].paroEventos) + " eventos", banda - 8),
+      lineasTexto(ctx, "Σ " + formatearMinutos(spec.resumenes[i].paroTotal), banda - 8));
+  });
+  var alto = sup + plotH + 30 + 14 * Math.max.apply(null, etiquetas.map(function (ls) { return ls.length; }));
+  if (w !== ancho || h !== alto) {
+    cv.style.width = ancho + "px"; cv.style.height = alto + "px";
+    cont.style.height = (alto + (ancho > cont.clientWidth ? 18 : 0)) + "px";
+    cont.style.overflowX = "auto"; dibujarGrafica(cv, spec); return;
+  }
+  var escala = escalaEje(maximo(spec.cajas.filter(function (c) { return !!c; }).map(function (c) { return c.max; })));
+  function py(v) { return sup + plotH - v / escala.top * plotH; }
+  ctx.textBaseline = "middle"; ctx.textAlign = "right"; ctx.lineWidth = 1;
+  for (var tick = 0; tick <= 5; tick++) {
+    var valor = escala.top * tick / 5, y = py(valor);
+    ctx.strokeStyle = "#EDF1F6"; ctx.beginPath(); ctx.moveTo(izq, y); ctx.lineTo(izq + plotW, y); ctx.stroke();
+    ctx.fillStyle = "#5A6779"; ctx.fillText(numero(valor, escala.top < 5 ? 1 : 0), izq - 8, y);
+  }
+  ctx.save(); ctx.translate(13, sup + plotH / 2); ctx.rotate(-Math.PI / 2); ctx.textAlign = "center";
+  ctx.fillText("Duración del paro (minutos)", 0, 0); ctx.restore();
+  spec.cajas.forEach(function (c, i) {
+    var cx = izq + banda * (i + 0.5), mitad = Math.min(22, banda * 0.28);
+    ctx.fillStyle = "#5A6779"; ctx.textAlign = "center";
+    etiquetas[i].forEach(function (linea, j) { ctx.fillText(linea, cx, sup + plotH + 16 + j * 14); });
+    cv._zonas.push({ x: izq + banda * i, y: sup, w: banda, h: alto - sup, html: spec.tooltips[i] });
+    if (!c) {
+      lineasTexto(ctx, spec.resumenes[i].paroEventos ? "Sin duración" : "Sin eventos", banda - 8)
+        .forEach(function (linea, j) { ctx.fillText(linea, cx, sup + plotH / 2 + j * 14); });
+      return;
+    }
+    ctx.strokeStyle = PALETA[0]; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx, py(c.bigoteMax)); ctx.lineTo(cx, py(c.bigoteMin));
+    [c.bigoteMin, c.bigoteMax].forEach(function (v) { ctx.moveTo(cx - mitad / 2, py(v)); ctx.lineTo(cx + mitad / 2, py(v)); }); ctx.stroke();
+    ctx.fillStyle = hexARgba(PALETA[0], 0.25);
+    ctx.fillRect(cx - mitad, py(c.q3), mitad * 2, Math.max(1, py(c.q1) - py(c.q3)));
+    ctx.strokeRect(cx - mitad, py(c.q3), mitad * 2, Math.max(1, py(c.q1) - py(c.q3)));
+    ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - mitad, py(c.mediana)); ctx.lineTo(cx + mitad, py(c.mediana)); ctx.stroke();
+    c.atipicos.forEach(function (v) {
+      ctx.beginPath(); ctx.arc(cx, py(v), 3, 0, Math.PI * 2); ctx.fillStyle = PALETA[0]; ctx.fill();
+      cv._zonas.push({ x: cx - 5, y: py(v) - 5, w: 10, h: 10, html: spec.tooltips[i] + "<br>Duración del atípico: " + numero(v, 2) + " min" });
+    });
+  });
+}
+
 /* ---------- Dona ---------- */
 function dibujarDona(cv, ctx, spec, w, h) {
   var datos = spec.series[0].datos, labels = spec.labels;
   var total = suma(datos.filter(function (v) { return v && !isNaN(v); }));
   if (!total) { dibujarVacio(ctx, w, h); return; }
-  var anchoLeyenda = w > 380 ? 132 : 0;
+  var anchoLeyenda = spec.leyenda !== false && w > 380 ? 132 : 0;
   var cx = (w - anchoLeyenda) / 2, cy = h / 2;
-  var radio = Math.max(24, Math.min((w - anchoLeyenda) / 2, h / 2) - 12);
+  var radio = Math.max(24, Math.min((w - anchoLeyenda) / 2 - (spec.porcentajesSectores ? 54 : 12), h / 2 - 12));
   var radioInterno = radio * 0.58;
   var ang = -Math.PI / 2;
   var sectores = [];
@@ -4604,10 +4661,12 @@ function dibujarDona(cv, ctx, spec, w, h) {
     ctx.arc(cx, cy, radio, ang, ang + barrido);
     ctx.closePath();
     ctx.fillStyle = spec.series[0].colores ? spec.series[0].colores[i] : PALETA[i % PALETA.length];
+    ctx.globalAlpha = spec.activo !== undefined && spec.activo !== null && spec.activo !== i ? 0.35 : 1;
     ctx.fill();
     sectores.push({ ini: ang, fin: ang + barrido, idx: i });
     ang += barrido;
   }
+  ctx.globalAlpha = 1;
   ctx.globalCompositeOperation = "destination-out";
   ctx.beginPath();
   ctx.arc(cx, cy, radioInterno, 0, Math.PI * 2);
@@ -4622,6 +4681,29 @@ function dibujarDona(cv, ctx, spec, w, h) {
   ctx.fillStyle = "#5A6779";
   ctx.font = "10px 'Segoe UI', Arial, sans-serif";
   ctx.fillText(spec.etiquetaCentro || "TOTAL", cx, cy + 12);
+
+  if (spec.porcentajesSectores) {
+    [-1, 1].forEach(function (lado) {
+      var puntos = sectores.map(function (s) {
+        var a = (s.ini + s.fin) / 2;
+        return { idx: s.idx, x: cx + Math.cos(a) * radio, y: cy + Math.sin(a) * radio, lado: Math.cos(a) < 0 ? -1 : 1 };
+      }).filter(function (p) { return p.lado === lado; }).sort(function (a, b) { return a.y - b.y; });
+      puntos.forEach(function (p, i) { p.textoY = Math.max(12, p.y, i ? puntos[i - 1].textoY + 17 : 0); });
+      for (var n = puntos.length - 1; n >= 0; n--) puntos[n].textoY = Math.min(puntos[n].textoY, h - 12 - (puntos.length - 1 - n) * 17);
+      puntos.forEach(function (p) {
+        var x = cx + lado * (radio + 8);
+        var texto = numero(porcentaje(datos[p.idx], spec.totalPorcentaje === undefined ? total : spec.totalPorcentaje) || 0, 1) + "%";
+        ctx.strokeStyle = spec.series[0].colores[p.idx];
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(x, p.textoY); ctx.stroke();
+        ctx.textAlign = lado < 0 ? "right" : "left";
+        ctx.font = "700 11px 'Segoe UI', Arial, sans-serif";
+        ctx.fillStyle = "#2C3644";
+        ctx.fillText(texto, x + lado * 4, p.textoY);
+        var ancho = ctx.measureText(texto).width;
+        cv._zonas.push({ x: lado < 0 ? x - 4 - ancho : x + 4, y: p.textoY - 8, w: ancho, h: 16, idx: p.idx, html: tooltipPunto(spec, 0, p.idx) });
+      });
+    });
+  }
 
   if (anchoLeyenda) {
     var lx = w - anchoLeyenda + 6, ly = cy - (labels.length * 17) / 2 + 8;
@@ -4658,7 +4740,7 @@ function tooltipPunto(spec, iSerie, iPunto) {
   if (spec.series.length > 1) html += "<br>" + esc(serie.nombre || "");
   html += "<br>" + esc(spec.medidaTexto || "Valor") + ": " + formatoValor(spec, v);
   if (spec.mostrarPorcentaje) {
-    var tot = suma(serie.datos.filter(function (x) { return x && !isNaN(x); }));
+    var tot = spec.totalPorcentaje === undefined ? suma(serie.datos.filter(function (x) { return x && !isNaN(x); })) : spec.totalPorcentaje;
     html += "<br>Porcentaje del total: " + (tot ? numero(porcentaje(v, tot), 1) : "0") + " %";
   }
   if (spec.extra && spec.extra[iPunto]) html += "<br>" + spec.extra[iPunto];
@@ -4688,11 +4770,18 @@ function tooltipBanda(spec, iPunto) {
     tip.style.left = Math.max(6, px) + "px";
     tip.style.top = Math.max(6, py) + "px";
   }
-  function ocultar() { if (!tip) tip = $("tooltip"); tip.style.display = "none"; }
+  function ocultar() { if (!tip) tip = $("tooltip"); tip.style.display = "none"; resaltarRespuestaKpi3(null); }
 
   document.addEventListener("mousemove", function (ev) {
     var cv = ev.target;
+    var filaRespuesta = cv && cv.closest ? cv.closest("#listaRespuestaKpi3 [data-sector]") : null;
+    if (filaRespuesta) {
+      resaltarRespuestaKpi3(Number(filaRespuesta.dataset.indice));
+      mostrar(tooltipPunto($("listaRespuestaKpi3")._spec, 0, Number(filaRespuesta.dataset.indice)), ev.clientX, ev.clientY);
+      return;
+    }
     if (!cv || cv.tagName !== "CANVAS") { ocultar(); return; }
+    if (cv.id !== "gBarrasRespuesta") resaltarRespuestaKpi3(null);
     var rect = cv.getBoundingClientRect();
     var x = ev.clientX - rect.left, y = ev.clientY - rect.top;
     // Dona: prueba angular
@@ -4715,6 +4804,7 @@ function tooltipBanda(spec, iPunto) {
     for (var i = zonas.length - 1; i >= 0; i--) {
       var z = zonas[i];
       if (x >= z.x && x <= z.x + z.w && y >= z.y && y <= z.y + z.h) {
+        if (cv.id === "gBarrasRespuesta") resaltarRespuestaKpi3(z.idx);
         mostrar(z.html, ev.clientX, ev.clientY);
         return;
       }
@@ -4789,20 +4879,6 @@ var COLUMNAS_INCIDENCIAS = [
   { campo: "descripcion", titulo: "Descripcion", clase: "desc", texto: function (r) { return esc(r.descripcion || ""); } }
 ];
 
-/* Columnas de la tabla de alarmas activas */
-var COLUMNAS_ACTIVAS = [
-  { campo: "fecha", titulo: "Fecha", texto: function (r) { return r.fecha ? fechaLarga(r.fecha) : "-"; } },
-  { campo: "horaActivacion", titulo: "Hora de activacion", texto: function (r) { return horaCorta(r.horaActivacion); } },
-  { campo: "turno", titulo: "Turno" },
-  { campo: "tipoAlarma", titulo: "Tipo de alarma" },
-  { campo: "nivel", titulo: "Nivel" },
-  { campo: "area", titulo: "Area" },
-  { campo: "clasificacion", titulo: "NAT/IOC" },
-  { campo: "severidad", titulo: "Severidad", texto: function (r) { return etiquetaSeveridad(r.severidad); } },
-  { campo: "status", titulo: "Status", texto: function (r) { return etiquetaStatus(r.status); } },
-  { campo: "transcurrido", titulo: "Tiempo transcurrido", num: true, texto: function (r) { return textoTranscurrido(r); } }
-];
-
 function etiquetaStatus(s) {
   var c = s === "ACTIVA" ? "e-activa" : (s === "EN ATENCION" ? "e-atencion" : (s === "RESUELTA" ? "e-resuelta" : "e-nd"));
   return '<span class="etq ' + c + '">' + esc(s || "N/D") + "</span>";
@@ -4818,12 +4894,6 @@ function minutosTranscurridos(reg) {
   var ahora = Date.now();
   if (ahora < inicio) return null;
   return (ahora - inicio) / 60000;
-}
-function textoTranscurrido(reg) {
-  var m = minutosTranscurridos(reg);
-  if (m === null) return '<span class="etq e-nd">NO CALCULABLE</span>';
-  if (m > 60 * 24) return numero(m / 1440, 1) + " dias";
-  return formatearMinutos(m);
 }
 
 /* Motor generico de tabla */
@@ -5053,18 +5123,25 @@ function renderKpis() {
   renderParetoKpi1(deNivel, alarmaSel);
 
   /* KPI 2 - TIEMPO DE PARO TOTAL (NAT / IOC) */
-  $("kpi2Valor").innerHTML = (IND.paroTotal >= 60 ? formatearMinutos(IND.paroTotal) : numero(IND.paroTotal, 0) + "<small>min</small>");
+  var periodo = periodoParo();
+  var regsParo = periodo ? registrosEnVentana(periodo) : [];
+  var paro = calcularIndicadores(regsParo);
+  var ventanasParo = periodo ? ventanasComparacion("equivalente", periodo) : null;
+  var paroAnt = calcularIndicadores(ventanasParo ? registrosEnVentana(ventanasParo.previo) : []);
+  $("kpi2Valor").innerHTML = (paro.paroTotal >= 60 ? formatearMinutos(paro.paroTotal) : numero(paro.paroTotal, 0) + "<small>min</small>");
   $("kpi2Sub").textContent = "Eventos NAT / IOC con restablecimiento capturado";
-  $("kpi2Var").innerHTML = textoVariacion(calcularVariacion(IND.paroTotal, IND_ANT.paroTotal), "min");
-  $("kpi2Prom").textContent = IND.paroProm === null ? "-" : formatearMinutos(IND.paroProm);
-  $("kpi2Eventos").textContent = numero(IND.paroEventos);
-  $("kpi2Nat").textContent = numero(IND.natN) + (IND.natPctParo === null ? "" : " (" + numero(IND.natPctParo, 0) + "% del paro)");
-  $("kpi2Ioc").textContent = numero(IND.iocN) + (IND.iocPctParo === null ? "" : " (" + numero(IND.iocPctParo, 0) + "% del paro)");
-  var paroDia = IND.dias > 0 ? IND.paroTotal / IND.dias : null;
+  $("kpi2Var").innerHTML = textoVariacion(calcularVariacion(paro.paroTotal, paroAnt.paroTotal), "min");
+  $("kpi2Prom").textContent = paro.paroProm === null ? "-" : formatearMinutos(paro.paroProm);
+  $("kpi2Eventos").textContent = numero(paro.paroEventos);
+  $("kpi2Nat").textContent = numero(paro.natN) + (paro.natPctParo === null ? "" : " (" + numero(paro.natPctParo, 0) + "% del paro)");
+  $("kpi2Ioc").textContent = numero(paro.iocN) + (paro.iocPctParo === null ? "" : " (" + numero(paro.iocPctParo, 0) + "% del paro)");
+  var paroDia = paro.dias > 0 ? paro.paroTotal / paro.dias : null;
   var sem2 = semaforoMenorMejor(paroDia, UMBRALES.tiempoParo);
   pintarSemaforo($("kpi2Sem"), sem2);
   pintarTarjeta("kpi2", sem2);
-  renderDesgloseParo(regs);
+  renderCajasParo();
+  $("kpi2Desglose").hidden = !periodo || !ESTADO.ui.mesParo;
+  renderDesgloseParo(regsParo);
 
   /* KPI 3 - TIEMPO DE RESPUESTA */
   actualizarSelectoresRespuesta();
@@ -5072,7 +5149,7 @@ function renderKpis() {
   var respuesta = calcularIndicadores(regsRespuesta);
   var respuestaAnt = calcularIndicadores(filtrarRespuesta(ant));
   $("kpi3Valor").innerHTML = respuesta.trProm === null ? '-<small>min prom.</small>' : numero(respuesta.trProm, 1) + "<small>min prom.</small>";
-  $("kpi3Sub").textContent = respuesta.trN + " de " + respuesta.total + " registros tienen restablecimiento capturado";
+  $("kpi3Sub").textContent = respuesta.resueltos.length + " de " + respuesta.total + " registros tienen restablecimiento capturado";
   $("kpi3Var").innerHTML = textoVariacion(calcularVariacion(respuesta.trProm, respuestaAnt.trProm), "min", 1);
   $("kpi3N").textContent = numero(respuesta.trN);
   $("kpi3Pct").textContent = respuesta.trPctCalculado === null ? "-" : numero(respuesta.trPctCalculado, 1) + " %";
@@ -5080,6 +5157,7 @@ function renderKpis() {
   $("kpi3Max").textContent = respuesta.trMax === null ? "-" : formatearMinutos(respuesta.trMax);
   $("kpi3Total").textContent = formatearMinutos(respuesta.trTotal);
   $("kpi3Mediana").textContent = respuesta.trMediana === null ? "-" : formatearMinutos(respuesta.trMediana);
+  $("kpi3Mantenimiento").textContent = numero(respuesta.mantenimientoN) + " alarmas / " + formatearMinutos(respuesta.mantenimientoTotal);
   var sem3 = semaforoMenorMejor(respuesta.trProm, UMBRALES.tiempoRespuesta);
   pintarSemaforo($("kpi3Sem"), sem3);
   pintarTarjeta("kpi3", sem3);
@@ -5102,13 +5180,14 @@ function renderKpis() {
   [sem1, sem2, sem3, sem4].forEach(function (s, i) { $("tabKpi" + (i + 1) + "Pt").className = "tab-pt " + s; });
 
   /* Indicadores rapidos */
-  $("mTotal").textContent = numero(IND.total);
-  $("mTotalSub").textContent = IND.dias + " dias con registro";
-  $("mActivas").textContent = numero(IND.activas.length);
-  $("mCriticas").textContent = numero(IND.criticas.length);
-  $("mDias").textContent = numero(IND.dias);
-  $("mPorDia").textContent = IND.porDia === null ? "-" : numero(IND.porDia, 1);
-  $("mErrores").textContent = numero(IND.conError.length);
+  var resumen = ESTADO.ui.kpiTab === "2" ? paro : IND;
+  $("mTotal").textContent = numero(resumen.total);
+  $("mTotalSub").textContent = resumen.dias + " dias con registro";
+  $("mActivas").textContent = numero(resumen.activas.length);
+  $("mCriticas").textContent = numero(resumen.criticas.length);
+  $("mDias").textContent = numero(resumen.dias);
+  $("mPorDia").textContent = resumen.porDia === null ? "-" : numero(resumen.porDia, 1);
+  $("mErrores").textContent = numero(resumen.conError.length);
 }
 
 /* Opciones del boton "Seleccionar nivel" del KPI 1 (catalogo NOMENCLATURA.niveles) */
@@ -5158,6 +5237,7 @@ function renderParetoKpi1(regs, alarmaSel) {
   }
   renderGrafica("gParetoKpi1", {
     tipo: "barras",
+    ejeXCategorias: true,
     labels: rank.map(function (g) { return g.clave; }),
     series: [{ nombre: "Activaciones", datos: rank.map(function (g) { return g.valor; }), colores: colores }],
     acumulado: acumulado,
@@ -5193,13 +5273,64 @@ function renderParetoKpi1(regs, alarmaSel) {
 
 var FILA_SIN_DATOS = '<tr><td colspan="6" style="text-align:center;color:var(--gris-600)">Sin datos para los filtros seleccionados</td></tr>';
 
+/* Periodo local de la pestana de frecuencia de paros; conserva la fecha operativa. */
+var MESES_PARO = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+function restablecerPeriodoParo() {
+  var anios = periodosDe(ESTADO.registros, "mes").map(function (p) { return p.slice(0, 4); })
+    .filter(function (a, i, lista) { return lista.indexOf(a) === i; }).reverse();
+  ESTADO.ui.anioParo = anios[0] || "";
+  ESTADO.ui.mesParo = "";
+  llenarSelect("kpi2Anio", anios.slice(1), anios[0] || "Sin datos", ESTADO.ui.anioParo, ESTADO.ui.anioParo);
+  $("kpi2Anio").disabled = !anios.length;
+  $("kpi2Mes").innerHTML = '<option value="">Seleccionar mes</option>' + MESES_PARO.map(function (mes, i) {
+    return '<option value="' + pad2(i + 1) + '">' + mes + '</option>';
+  }).join("");
+  $("kpi2Mes").disabled = !anios.length;
+}
+function periodoParo() {
+  var anio = ESTADO.ui.anioParo, mes = ESTADO.ui.mesParo;
+  if (!anio) return null;
+  return {
+    ini: anio + "-" + (mes || "01") + "-01",
+    fin: mes ? isoDeFecha(new Date(Number(anio), Number(mes), 0)) : anio + "-12-31"
+  };
+}
+function renderCajasParo() {
+  var anio = ESTADO.ui.anioParo;
+  var regs = anio ? registrosEnVentana({ ini: anio + "-01-01", fin: anio + "-12-31" }) : [];
+  var grupos = agruparPorPeriodo(regs, "mes"), sinDuracion = 0, resumenes = [], tooltips = [];
+  var cajas = MESES_PARO.map(function (mes, i) {
+    var registros = grupos[anio + "-" + pad2(i + 1)] || [], ind = calcularIndicadores(registros);
+    var duraciones = registros.filter(function (r) {
+      return (r.clasificacion === "NAT" || r.clasificacion === "IOC") && r.tiempoRespuesta !== null && r.tiempoRespuesta >= 0;
+    }).map(function (r) { return r.tiempoParo; });
+    var caja = estadisticasCaja(duraciones);
+    sinDuracion += ind.paroEventos - duraciones.length;
+    resumenes.push(ind);
+    var detalle = "<b>" + mes + " " + esc(anio) + "</b><br>Eventos NAT: " + numero(ind.natN) + "<br>Eventos IOC: " + numero(ind.iocN)
+      + "<br>Total de eventos: " + numero(ind.paroEventos) + "<br>Con duración: " + numero(duraciones.length)
+      + "<br>Duración acumulada: " + formatearMinutos(ind.paroTotal);
+    if (caja) {
+      [["Mínimo", caja.min], ["Q1", caja.q1], ["Mediana", caja.mediana], ["Q3", caja.q3], ["Máximo", caja.max],
+        ["Bigote inferior", caja.bigoteMin], ["Bigote superior", caja.bigoteMax]].forEach(function (par) { detalle += "<br>" + par[0] + ": " + numero(par[1], 2) + " min"; });
+      detalle += "<br>Valores atípicos: " + numero(caja.atipicos.length);
+    } else detalle += ind.paroEventos ? "<br>Sin duración calculable" : "<br>Sin eventos";
+    tooltips.push(detalle);
+    return caja;
+  });
+  $("kpi2CajasTitulo").textContent = "Frecuencia y tiempos de paro totales" + (anio ? " · " + anio : "");
+  renderGrafica("gCajasParo", { tipo: "cajas", labels: MESES_PARO, cajas: cajas, resumenes: resumenes, tooltips: tooltips });
+  $("notaCajasParo").textContent = "NAT + IOC. Caja: Q1–Q3; línea: mediana; bigotes: último dato dentro de 1,5 veces el rango intercuartílico; puntos: valores atípicos. Σ: duración acumulada. "
+    + numero(sinDuracion) + (sinDuracion === 1 ? " evento sin duración, excluido de la distribución." : " eventos sin duración, excluidos de la distribución.");
+}
+
 /* KPI 2: desglose NAT / IOC con el mismo criterio de calcularIndicadores():
    paro = registro clasificado NAT o IOC; su duracion es FORMULAS.tiempoParo(), que solo
    existe con restablecimiento capturado. El promedio se toma sobre eventos con duracion. */
 function renderDesgloseParo(regs) {
   var filas = ["NAT", "IOC"].map(function (c) {
     var ev = regs.filter(function (r) { return r.clasificacion === c; });
-    var dur = ev.filter(FORMULAS.incluyeEnTiempoRespuesta).map(function (r) { return r.tiempoParo; });
+    var dur = ev.filter(function (r) { return r.tiempoRespuesta !== null && r.tiempoRespuesta >= 0; }).map(function (r) { return r.tiempoParo; });
     return { tipo: c, eventos: ev.length, conDur: dur.length, total: suma(dur), prom: promedio(dur) };
   });
   var tot = {
@@ -5215,23 +5346,17 @@ function renderDesgloseParo(regs) {
   };
   var html = '<thead><tr><th>Tipo de paro</th><th class="num">Eventos</th><th class="num">Con duraci&oacute;n</th>'
     + '<th class="num">Duraci&oacute;n total</th><th class="num">Duraci&oacute;n promedio</th><th class="num">% del tiempo de paro</th></tr></thead><tbody>';
-  if (!tot.eventos) {
-    html += FILA_SIN_DATOS + "</tbody>";
-  } else {
-    filas.forEach(function (f) { html += "<tr><td><b>" + f.tipo + "</b></td>" + celdas(f, porcentaje(f.total, tot.total)) + "</tr>"; });
-    html += "</tbody><tfoot><tr><td>Total</td>" + celdas(tot, tot.total > 0 ? 100 : null) + "</tr></tfoot>";
-  }
+  filas.forEach(function (f) { html += "<tr><td><b>" + f.tipo + "</b></td>" + celdas(f, tot.eventos ? porcentaje(f.total, tot.total) : 0) + "</tr>"; });
+  html += "</tbody><tfoot><tr><td>Total</td>" + celdas(tot, tot.total > 0 ? 100 : (tot.eventos ? null : 0)) + "</tr></tfoot>";
   $("tablaParoKpi2").innerHTML = html;
   var sinDur = tot.eventos - tot.conDur;
-  $("kpi2Nota").innerHTML = tot.eventos
-    ? "Solo cuentan como paro los registros clasificados <b>NAT</b> o <b>IOC</b>; los registros N/A no se incluyen. "
+  $("kpi2Nota").innerHTML = "Solo cuentan como paro los registros clasificados <b>NAT</b> o <b>IOC</b>; los registros N/A no se incluyen. "
       + "<b>Eventos</b> es la cantidad de paros; la <b>duraci&oacute;n</b> solo se suma cuando hay restablecimiento capturado"
       + (sinDur ? " (" + numero(sinDur) + " evento" + (sinDur === 1 ? "" : "s") + " sin duraci&oacute;n, excluido" + (sinDur === 1 ? "" : "s") + " del promedio)." : ".")
-      + " Definici&oacute;n DEMO, pendiente de confirmar con documentaci&oacute;n t&eacute;cnica."
-    : "";
+      + " Definici&oacute;n DEMO, pendiente de confirmar con documentaci&oacute;n t&eacute;cnica.";
 }
 
-/* KPI 3: consulta por turno para el nivel, la seccion y la alarma seleccionados.
+/* KPI 3: consulta por tipo de alarma para el nivel, la seccion y la alarma seleccionados.
    Activaciones = todos los registros; el promedio usa solo los registros con
    tiempo de respuesta valido (FORMULAS.incluyeEnTiempoRespuesta). Los faltantes no son cero. */
 function renderRespuestaPorTurno(regs, textoNivel, alarmaSel) {
@@ -5243,25 +5368,60 @@ function renderRespuestaPorTurno(regs, textoNivel, alarmaSel) {
   niv.value = ESTADO.ui.nivelRespuesta;
   $("kpi3Alarma").value = alarmaSel;
 
-  var turnos = listaTurnos();
-  var porTurno = agrupar(regs, function (r) { return r.turno; });
-  for (var k in porTurno) if (turnos.indexOf(k) === -1) turnos.push(k);   // turnos no estandar del archivo real
-  var fila = function (etq, items) {
-    var t = items.filter(FORMULAS.incluyeEnTiempoRespuesta).map(function (r) { return r.tiempoRespuesta; });
-    var p = promedio(t);
-    return "<td>" + etq + '</td><td class="num">' + numero(items.length) + "</td>"
-      + '<td class="num">' + (p === null ? "-" : formatearMinutos(p)) + "</td>";
+  var totalPeriodo = ESTADO.filtrados.length;
+  var colores = ["#B85C00", "#E38900", "#F5B51B", "#FFD264", "#FFEBB0"];
+  var alarmas = rankear(agrupar(regs, function (r) { return r.tipoAlarma; }), function (items) { return items.length; });
+  alarmas.forEach(function (g) { g.promedio = calcularIndicadores(g.items).trProm; });
+  alarmas.sort(function (a, b) {
+    if (a.valor !== b.valor) return b.valor - a.valor;
+    if (a.promedio === null) return b.promedio === null ? b.valor - a.valor : 1;
+    if (b.promedio === null) return -1;
+    return b.promedio - a.promedio || b.valor - a.valor;
+  });
+  var agruparOtras = alarmas.length > colores.length;
+  if (agruparOtras) colores[colores.length - 1] = PALETA[9];
+  alarmas.forEach(function (g, i) { g.sector = Math.min(i, colores.length - 1); });
+  // Conserva colores y marca Otras; ordena los renglones por promedio, sin calculo al final.
+  alarmas.sort(function (a, b) {
+    if (a.promedio === null) return b.promedio === null ? b.valor - a.valor : 1;
+    if (b.promedio === null) return -1;
+    return b.promedio - a.promedio || b.valor - a.valor;
+  });
+  var conTiempo = alarmas.filter(function (g) { return g.promedio !== null; });
+  renderGrafica("gBarrasRespuesta", {
+    tipo: "barrasH", etiquetasCompletas: true, formato: "decimal",
+    labels: conTiempo.map(function (g) { return g.clave; }),
+    series: [{ nombre: "Tiempo de respuesta promedio", datos: conTiempo.map(function (g) { return g.promedio; }), color: PALETA[0] }],
+    frecuencias: conTiempo.map(function (g) { return g.valor; }),
+    medidaTexto: "Tiempo de respuesta promedio (min)",
+    extra: conTiempo.map(function (g) { return "Activaciones: " + numero(g.valor); })
+  });
+  var sinTiempo = alarmas.length - conTiempo.length;
+  $("notaBarrasRespuesta").textContent = numero(sinTiempo) + (sinTiempo === 1 ? " tipo de alarma sin tiempo de respuesta no se muestra." : " tipos de alarma sin tiempo de respuesta no se muestran.");
+  var lista = $("listaRespuestaKpi3");
+  lista._spec = {
+    labels: alarmas.map(function (g) { return g.clave; }),
+    series: [{ nombre: "Activaciones", datos: alarmas.map(function (g) { return g.valor; }) }],
+    medidaTexto: "Activaciones", mostrarPorcentaje: true, totalPorcentaje: totalPeriodo,
+    extra: alarmas.map(function (g) { return "Tiempo de respuesta promedio: " + formatearMinutos(g.promedio); })
   };
-  var html = '<thead><tr><th>Turno</th><th class="num">Activaciones</th>'
-    + '<th class="num">T. respuesta promedio</th></tr></thead><tbody>';
-  turnos.forEach(function (t) { html += "<tr>" + fila(esc(t), porTurno[t] || []) + "</tr>"; });
-  html += "</tbody><tfoot><tr>" + fila("Total", regs) + "</tr></tfoot>";
-  $("tablaTurnoKpi3").innerHTML = html;
+  lista.innerHTML = alarmas.map(function (g, i) {
+    return '<li data-sector="' + g.sector + '" data-indice="' + i + '"><i class="muestra" style="background:' + colores[g.sector] + '"></i>'
+      + '<span class="nm">' + esc(g.clave) + '<small>' + numero(g.valor) + " activaciones &middot; "
+      + numero(porcentaje(g.valor, totalPeriodo) || 0, 1) + " % del periodo" + (agruparOtras && g.sector === colores.length - 1 ? " &middot; Otras" : "") + "</small></span>"
+      + '<b class="vl">' + formatearMinutos(g.promedio) + "</b></li>";
+  }).join("") || '<li class="vacio">Sin datos para los filtros seleccionados</li>';
   var turnoGlobal = ESTADO.filtros.turno;
   $("kpi3Nota").innerHTML = "<b>" + esc(alarmaSel === "__TODAS__" ? "Todas las alarmas" : alarmaSel) + "</b> &middot; " + esc(textoNivel)
     + " &middot; " + esc(ESTADO.ui.seccionRespuesta === "__TODAS__" ? "Todas las secciones" : ESTADO.ui.seccionRespuesta)
     + ". Los registros sin restablecimiento se cuentan como activaciones pero no entran al promedio."
     + (turnoGlobal ? " Filtro de turno activo en Filtros adicionales: " + esc(turnoGlobal) + "." : "");
+}
+
+function resaltarRespuestaKpi3(indice) {
+  $("listaRespuestaKpi3").querySelectorAll("[data-indice]").forEach(function (fila) {
+    fila.classList.toggle("activa", indice !== null && Number(fila.dataset.indice) === indice);
+  });
 }
 
 /* KPI 4: base de calculo del cumplimiento (reglas de calcularIndicadores / FORMULAS.cumple) */
@@ -5297,37 +5457,13 @@ function activarTabKpi(n) {
     $("panelKpi" + i).hidden = !act;
   }
   if (!$("listaNivelKpi").hidden) abrirMenuNivel(false);
-  if (IND) { renderPanelesKpi(); renderComparacion(); }
+  if (IND) renderResumen();
   redibujarVisibles();
 }
 
 /* ---------- SECCION RESUMEN ---------- */
 function renderResumen() {
   renderKpis();
-  var regs = ESTADO.filtrados;
-
-  // Grafica de frecuencia por tipo de alarma
-  var grupos = agrupar(regs, function (r) { return r.tipoAlarma; });
-  var rank = rankear(grupos, function (items) { return items.length; });
-  var top = ESTADO.ui.topFrecuencia;
-  var visibles = top > 0 ? rank.slice(0, top) : rank;
-  var totalRegs = regs.length;
-  var extra = visibles.map(function (g) {
-    var min = g.items.filter(function (r) { return r.tiempoRespuesta !== null; }).map(function (r) { return r.tiempoRespuesta; });
-    var p = promedio(min);
-    return "Porcentaje del total: " + (totalRegs ? numero(porcentaje(g.valor, totalRegs), 1) : "0") + " %"
-      + "<br>Tiempo de respuesta promedio: " + (p === null ? "sin dato" : formatearMinutos(p))
-      + "<br>Alarmas activas: " + g.items.filter(function (r) { return r.activa; }).length;
-  });
-  renderGrafica("gFrecuencia", {
-    tipo: "barras",
-    labels: visibles.map(function (g) { return g.clave; }),
-    series: [{ nombre: "Activaciones", datos: visibles.map(function (g) { return g.valor; }), color: PALETA[0] }],
-    medidaTexto: "Activaciones",
-    ejeYTitulo: "Numero de activaciones",
-    etiquetasLargas: true,
-    extra: extra
-  });
 
   // Paneles de distribucion, ranking y comparacion: dependen de la pestana de KPI activa
   renderPanelesKpi();
@@ -5336,7 +5472,7 @@ function renderResumen() {
 
 var NOMBRE_KPI = {
   "1": "KPI 1 · Frecuencia de alarmas",
-  "2": "KPI 2 · Tiempos de paro",
+  "2": "KPI 3 y 4",
   "3": "KPI 3 · Tiempo de respuesta",
   "4": "KPI 4 · Cumplimiento operativo"
 };
@@ -5361,6 +5497,7 @@ function pintarRanking(items) {
 function renderPanelesKpi() {
   var regs = ESTADO.filtrados;
   var tab = ESTADO.ui.kpiTab;
+  if (tab === "2") regs = periodoParo() ? registrosEnVentana(periodoParo()) : [];
   var sub = NOMBRE_KPI[tab] + " · periodo filtrado";
   var valido = FORMULAS.incluyeEnTiempoRespuesta;
   var ordenSev = function (grupos) {
@@ -5372,12 +5509,13 @@ function renderPanelesKpi() {
 
   if (tab === "2") {
     /* KPI 2: paro = NAT / IOC; minutos de FORMULAS.tiempoParo (con restablecimiento) */
+    var indParo = calcularIndicadores(regs);
     $("tituloPanelA").textContent = "Distribución del tiempo de paro";
     $("tituloPanelB").textContent = "Alarmas con más tiempo de paro";
     renderGrafica("gSeveridad", {
       tipo: "dona",
       labels: ["NAT", "IOC"],
-      series: [{ nombre: "Tiempo de paro", datos: [IND.natMin, IND.iocMin], colores: [COLOR_NAT, COLOR_IOC] }],
+      series: [{ nombre: "Tiempo de paro", datos: [indParo.natMin, indParo.iocMin], colores: [COLOR_NAT, COLOR_IOC] }],
       medidaTexto: "Tiempo de paro",
       formato: "minutos",
       mostrarPorcentaje: true,
@@ -5461,7 +5599,7 @@ function renderPanelesKpi() {
 /* ---------- 16. Comparacion temporal ---------- */
 function renderComparacion() {
   $("chipComparacion").textContent = NOMBRE_KPI[ESTADO.ui.kpiTab];
-  var v = ventanasComparacion(ESTADO.ui.comparacion);
+  var v = ventanasComparacion(ESTADO.ui.comparacion, ESTADO.ui.kpiTab === "2" ? periodoParo() : null);
   if (!v) { pintarTablaSimple("tablaComparacion", [{ t: "Indicador" }], []); return; }
   var actual = registrosEnVentana(v.actual);
   var previo = registrosEnVentana(v.previo);
@@ -5534,124 +5672,6 @@ function renderComparacion() {
   ];
   pintarTablaSimple("tablaComparacion", enc, filas);
 }
-/* ---------- SECCION OPERACION ---------- */
-function renderOperacion() {
-  var regs = ESTADO.filtrados;
-
-  $("oParoTotal").textContent = formatearMinutos(IND.paroTotal);
-  $("oParoProm").textContent = IND.paroProm === null ? "-" : formatearMinutos(IND.paroProm);
-  $("oNat").textContent = numero(IND.natN);
-  $("oNatPct").textContent = IND.natPct === null ? "-" : numero(IND.natPct, 1) + " % del total de alarmas";
-  $("oIoc").textContent = numero(IND.iocN);
-  $("oIocPct").textContent = IND.iocPct === null ? "-" : numero(IND.iocPct, 1) + " % del total de alarmas";
-  $("oParoMax").textContent = IND.paroMax === null ? "-" : formatearMinutos(IND.paroMax);
-  $("oActivas").textContent = numero(IND.activas.length);
-
-  var gran = ESTADO.ui.escalaParo;
-  var metrica = ESTADO.ui.metricaParo;
-  var periodos = periodosDe(regs, gran);
-  var etiquetas = periodos.map(function (p) { return etiquetaPeriodo(p, gran); });
-
-  function serieParo(clasificacion) {
-    var porPeriodo = agruparPorPeriodo(regs.filter(function (r) { return r.clasificacion === clasificacion; }), gran);
-    return periodos.map(function (p) {
-      var items = porPeriodo[p] || [];
-      if (metrica === "conteo") return items.length;
-      var mins = items.map(function (r) { return r.tiempoParo; }).filter(function (v) { return v > 0; });
-      if (metrica === "promedio") return mins.length ? suma(mins) / mins.length : 0;
-      return suma(mins);
-    });
-  }
-  var textoMetrica = metrica === "conteo" ? "Activaciones" : (metrica === "promedio" ? "Tiempo promedio" : "Tiempo total");
-  var formato = metrica === "conteo" ? "entero" : "minutos";
-  var seriesParo = [
-    { nombre: "NAT", datos: serieParo("NAT"), color: COLOR_NAT },
-    { nombre: "IOC", datos: serieParo("IOC"), color: COLOR_IOC_PARO_TIEMPO }
-  ];
-  renderGrafica("gParoTiempo", {
-    tipo: "lineas", area: true,
-    labels: etiquetas, series: seriesParo,
-    medidaTexto: textoMetrica, formato: formato,
-    ejeYTitulo: metrica === "conteo" ? "Activaciones" : "Minutos"
-  });
-  pintarLeyenda("legParoTiempo", seriesParo);
-
-  // 13. Frecuencia de paros: siempre conteo, misma escala temporal
-  var natConteo = agruparPorPeriodo(regs.filter(function (r) { return r.clasificacion === "NAT"; }), gran);
-  var iocConteo = agruparPorPeriodo(regs.filter(function (r) { return r.clasificacion === "IOC"; }), gran);
-  var seriesFrec = [
-    { nombre: "Activaciones NAT", datos: periodos.map(function (p) { return (natConteo[p] || []).length; }), color: COLOR_NAT },
-    { nombre: "Activaciones IOC", datos: periodos.map(function (p) { return (iocConteo[p] || []).length; }), color: COLOR_IOC }
-  ];
-  renderGrafica("gParoFrecuencia", {
-    tipo: "barras", labels: etiquetas, series: seriesFrec,
-    medidaTexto: "Activaciones", ejeYTitulo: "Numero de activaciones"
-  });
-  pintarLeyenda("legParoFrecuencia", seriesFrec);
-
-  // Comportamiento por turno
-  var turnos = listaTurnos();
-  var porTurno = agrupar(regs, function (r) { return r.turno; });
-  var seriesTurno = [
-    { nombre: "Alarmas registradas", datos: turnos.map(function (t) { return (porTurno[t] || []).length; }), color: PALETA[0] },
-    { nombre: "Alarmas NAT/IOC", datos: turnos.map(function (t) { return (porTurno[t] || []).filter(function (r) { return r.clasificacion !== "N/A"; }).length; }), color: PALETA[2] }
-  ];
-  renderGrafica("gTurnos", {
-    tipo: "barras", labels: turnos, series: seriesTurno,
-    medidaTexto: "Registros", rotarEtiquetas: false, ejeYTitulo: "Registros"
-  });
-  pintarLeyenda("legTurnos", seriesTurno);
-
-  // Incidencias por area
-  var porArea = rankear(agrupar(regs, function (r) { return r.area; }), function (items) { return items.length; });
-  renderGrafica("gAreaOperacion", {
-    tipo: "barrasH",
-    labels: porArea.map(function (g) { return g.clave; }),
-    series: [{ nombre: "Registros", datos: porArea.map(function (g) { return g.valor; }), color: PALETA[1] }],
-    medidaTexto: "Registros", mostrarPorcentaje: true
-  });
-
-  // Tabla de alarmas activas
-  var activas = regs.filter(function (r) { return r.activa; }).sort(function (a, b) { return claveCronologica(b) - claveCronologica(a); });
-  var tablaAct = $("tablaActivas");
-  if (!activas.length) {
-    tablaAct.innerHTML = '<tbody><tr><td><div class="vacio">No hay alarmas activas en el periodo y filtros seleccionados.</div></td></tr></tbody>';
-  } else {
-    var html = "<thead><tr>";
-    for (var i = 0; i < COLUMNAS_ACTIVAS.length; i++) html += "<th>" + COLUMNAS_ACTIVAS[i].titulo + "</th>";
-    html += "</tr></thead><tbody>";
-    for (i = 0; i < activas.length; i++) {
-      html += "<tr>";
-      for (var j = 0; j < COLUMNAS_ACTIVAS.length; j++) {
-        var c = COLUMNAS_ACTIVAS[j];
-        html += "<td>" + (c.texto ? c.texto(activas[i]) : esc(activas[i][c.campo])) + "</td>";
-      }
-      html += "</tr>";
-    }
-    tablaAct.innerHTML = html + "</tbody>";
-  }
-
-  // Resumen por turno
-  var filasTurno = turnos.map(function (t) {
-    var items = porTurno[t] || [];
-    var ind = calcularIndicadores(items);
-    return [
-      t,
-      numero(ind.total),
-      ind.total ? numero(porcentaje(ind.total, regs.length), 1) + " %" : "-",
-      formatearMinutos(ind.paroTotal),
-      ind.trProm === null ? "-" : formatearMinutos(ind.trProm),
-      ind.cumplimiento === null ? "-" : numero(ind.cumplimiento, 1) + " %",
-      numero(ind.activas.length)
-    ];
-  });
-  pintarTablaSimple("tablaTurnos", [
-    { t: "Turno" }, { t: "Alarmas", num: true }, { t: "% del total", num: true },
-    { t: "Tiempo de paro", num: true }, { t: "T. respuesta prom.", num: true },
-    { t: "Cumplimiento", num: true }, { t: "Activas", num: true }
-  ], filasTurno);
-}
-
 /* ---------- SECCION DESEMPENO ---------- */
 /* 14. Seleccion en cascada: Nivel -> Area/Subcategoria -> Tipo de alarma */
 function registrosDesempeno() {
@@ -5723,6 +5743,7 @@ function renderDesempeno() {
   });
   renderGrafica("gRespuesta", {
     tipo: "barras",
+    ejeXCategorias: dimension !== "fecha",
     labels: claves.map(function (k) { return dimension === "fecha" ? fechaLarga(k).slice(0, 6) : k; }),
     series: [{ nombre: textoMetrica, datos: claves.map(function (k) { return medida(grupos[k]); }), color: PALETA[0] }],
     medidaTexto: textoMetrica,
@@ -5745,6 +5766,7 @@ function renderDesempeno() {
     }
   }
   renderGrafica("gHistograma", {
+    ejeXCategorias: true,
     tipo: "barras", labels: etiquetasRango,
     series: [{
       nombre: "Incidencias", datos: conteos,
@@ -5813,49 +5835,15 @@ function renderIncidencias() {
   $("iPctIncidencia").textContent = totalGlobal ? numero(porcentaje(IND.total, totalGlobal), 1) : "-";
   $("iTiempoTotal").textContent = numero(IND.trTotal, 0);
 
-  var porTipo = rankear(agrupar(regs, function (r) { return r.tipoAlarma; }), function (it) { return it.length; }).slice(0, 12);
-  renderGrafica("gIncTipo", {
-    tipo: "barrasH",
-    labels: porTipo.map(function (g) { return g.clave; }),
-    series: [{ nombre: "Incidencias", datos: porTipo.map(function (g) { return g.valor; }), color: PALETA[0] }],
-    medidaTexto: "Incidencias", mostrarPorcentaje: true
-  });
-
-  var periodos = periodosDe(regs, "dia");
-  var porFecha = agruparPorPeriodo(regs, "dia");
-  renderGrafica("gIncFecha", {
-    tipo: "lineas", area: true,
-    labels: periodos.map(function (p) { return etiquetaPeriodo(p, "dia"); }),
-    series: [
-      { nombre: "Incidencias", datos: periodos.map(function (p) { return porFecha[p].length; }), color: PALETA[0] },
-      { nombre: "Criticas", datos: periodos.map(function (p) { return porFecha[p].filter(function (r) { return r.severidad === "CRITICA"; }).length; }), color: "#C62828" }
-    ],
-    medidaTexto: "Incidencias", ejeYTitulo: "Incidencias"
-  });
-
-  var turnos = listaTurnos();
-  var porTurno = agrupar(regs, function (r) { return r.turno; });
-  renderGrafica("gIncTurno", {
-    tipo: "dona", labels: turnos,
-    series: [{ nombre: "Incidencias", datos: turnos.map(function (t) { return (porTurno[t] || []).length; }), colores: [PALETA[0], PALETA[2]] }],
-    medidaTexto: "Incidencias", mostrarPorcentaje: true, etiquetaCentro: "INCIDENCIAS"
-  });
-
   var nivelesOrden = NOMENCLATURA.niveles.map(function (n) { return n.clave; });
   var porNivel = agrupar(regs, function (r) { return String(r.nivel); });
   var clavesNivel = nivelesOrden.filter(function (n) { return porNivel[n]; });
   for (var k in porNivel) if (clavesNivel.indexOf(k) === -1) clavesNivel.push(k);
   renderGrafica("gIncNivel", {
+    ejeXCategorias: true,
     tipo: "barras", labels: clavesNivel.map(function (n) { return "Nivel " + n; }),
     series: [{ nombre: "Incidencias", datos: clavesNivel.map(function (n) { return porNivel[n].length; }), color: PALETA[1] }],
     medidaTexto: "Incidencias", mostrarPorcentaje: true, rotarEtiquetas: false, ejeYTitulo: "Incidencias"
-  });
-
-  var porArea = rankear(agrupar(regs, function (r) { return r.area; }), function (it) { return it.length; });
-  renderGrafica("gIncArea", {
-    tipo: "barras", labels: porArea.map(function (g) { return g.clave; }),
-    series: [{ nombre: "Incidencias", datos: porArea.map(function (g) { return g.valor; }), color: PALETA[5] }],
-    medidaTexto: "Incidencias", mostrarPorcentaje: true, ejeYTitulo: "Incidencias"
   });
 
   pintarTabla("incidencias", COLUMNAS_INCIDENCIAS, regs, "tablaIncidencias", "contadorIncidencias", "pagIncidencias");
@@ -6185,7 +6173,7 @@ function exportarCSV() {
   }
   var campos = ["fecha", "horaActivacion", "horaRestablecimiento", "turno", "coordinador", "tipoAlarma",
     "categoria", "nivel", "area", "clasificacion", "tiempoParo", "tiempoRespuesta", "status",
-    "estadoOperacion", "severidad", "descripcion"];
+    "estadoOperacion", "severidad", "descripcion", "clasificacionAlarma"];
   var delim = ";";
   var lineas = [];
   var f = ESTADO.filtros;
@@ -6202,7 +6190,7 @@ function exportarCSV() {
   for (var i = 0; i < regs.length; i++) {
     var r = regs[i];
     lineas.push(campos.map(function (c) {
-      var v = r[c];
+      var v = c === "clasificacionAlarma" ? (FORMULAS.esMantenimiento(r) ? "Mantenimiento" : "") : r[c];
       if (c === "tiempoRespuesta" && v === null) return "";
       if (c === "tiempoParo" && !v) return "0";
       if (c === "horaRestablecimiento" && !v) return "";
@@ -6317,7 +6305,7 @@ function construirReporte() {
 
   html += '<div class="ficha"><h4>Alarmas mas frecuentes</h4><table class="tabla-simple"><thead><tr><th>Tipo de alarma</th><th class="num">Activaciones</th><th class="num">% del total</th><th class="num">T. respuesta promedio</th></tr></thead><tbody>';
   for (var i = 0; i < rankAlarmas.length; i++) {
-    var t = rankAlarmas[i].items.filter(function (r) { return r.tiempoRespuesta !== null; }).map(function (r) { return r.tiempoRespuesta; });
+    var t = rankAlarmas[i].items.filter(FORMULAS.incluyeEnTiempoRespuesta).map(function (r) { return r.tiempoRespuesta; });
     html += "<tr><td>" + esc(rankAlarmas[i].clave) + '</td><td class="num">' + numero(rankAlarmas[i].valor)
       + '</td><td class="num">' + numero(porcentaje(rankAlarmas[i].valor, IND.total), 1) + ' %</td><td class="num">'
       + (t.length ? formatearMinutos(suma(t) / t.length) : "-") + "</td></tr>";
@@ -6413,6 +6401,7 @@ function poblarSelectores() {
   llenarSelect("selAlarmaKpi", valoresUnicos(regs, "tipoAlarma"), "Todas las alarmas", "__TODAS__", ESTADO.ui.alarmaKpi);
   llenarSelect("selNivelDes", valoresUnicos(regs, "nivel"), "Todos los niveles", "__TODOS__", ESTADO.ui.nivelDes);
   actualizarSelectoresDesempeno();
+  restablecerPeriodoParo();
 }
 
 function filtrarRespuesta(regs) {
@@ -6523,7 +6512,6 @@ function renderSeccion(nombre) {
   if (!IND) return;
   switch (nombre) {
     case "resumen": renderResumen(); break;
-    case "operacion": renderOperacion(); break;
     case "desempeno": renderDesempeno(); break;
     case "incidencias": renderIncidencias(); break;
     case "tendencias": renderTendencias(); break;
@@ -6561,6 +6549,12 @@ function registrarEventos() {
   $("btnExportar2").addEventListener("click", exportarCSV);
 
   // Selectores de las secciones
+  $("kpi2Anio").addEventListener("change", function () {
+    ESTADO.ui.anioParo = this.value;
+    ESTADO.ui.mesParo = ""; $("kpi2Mes").value = "";
+    renderResumen();
+  });
+  $("kpi2Mes").addEventListener("change", function () { ESTADO.ui.mesParo = this.value; renderResumen(); });
   $("selAlarmaKpi").addEventListener("change", function () { ESTADO.ui.alarmaKpi = this.value; renderSeccion(ESTADO.ui.seccion); });
   $("kpi3Alarma").addEventListener("change", function () { ESTADO.ui.alarmaRespuesta = this.value; renderKpis(); });
   $("kpi3Nivel").addEventListener("change", function () { ESTADO.ui.nivelRespuesta = this.value; ESTADO.ui.seccionRespuesta = "__TODAS__"; renderKpis(); });
@@ -6593,10 +6587,7 @@ function registrarEventos() {
   $("menuNivel").addEventListener("keydown", function (ev) {
     if (ev.key === "Escape" && !$("listaNivelKpi").hidden) { abrirMenuNivel(false); $("btnNivelKpi").focus(); }
   });
-  $("selTopFrecuencia").addEventListener("change", function () { ESTADO.ui.topFrecuencia = Number(this.value); renderResumen(); });
   $("selComparacion").addEventListener("change", function () { ESTADO.ui.comparacion = this.value; renderComparacion(); });
-  $("selMetricaParo").addEventListener("change", function () { ESTADO.ui.metricaParo = this.value; renderOperacion(); });
-  $("selEscalaParo").addEventListener("change", function () { ESTADO.ui.escalaParo = this.value; renderOperacion(); });
   $("selNivelDes").addEventListener("change", function () {
     ESTADO.ui.nivelDes = this.value; ESTADO.ui.areaDes = "__TODAS__"; ESTADO.ui.alarmaDes = "__TODAS__";
     actualizarSelectoresDesempeno(); renderDesempeno();
