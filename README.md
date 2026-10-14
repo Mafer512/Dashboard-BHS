@@ -6,8 +6,8 @@ Proyecto de residencia profesional. El tablero está orientado al monitoreo, an�
 
 **▶ Abrir el dashboard en línea: https://mafer512.github.io/Dashboard-BHS/**
 
-> **DATOS DEMO — NO REPRESENTAN EL DESEMPEÑO REAL DEL AIFA.**
-> Los registros precargados son simulados y sirven únicamente para demostrar el funcionamiento del prototipo. Los umbrales, severidades y clasificaciones incluidos son valores DEMO y **no constituyen criterios oficiales del BHS**.
+> **DATOS SCADA — scada_11_al_28.xlsx.**
+> Los registros precargados provienen del archivo SCADA. Los umbrales y criterios de semáforo son provisionales y **están pendientes de validación oficial del BHS**.
 
 ---
 
@@ -15,7 +15,7 @@ Proyecto de residencia profesional. El tablero está orientado al monitoreo, an�
 
 **En línea.** Abre https://mafer512.github.io/Dashboard-BHS/ desde cualquier navegador o teléfono. No requiere instalación ni descarga.
 
-**Sin conexión.** Descarga `dashboard_bhs_aifa.html` y ábrelo con doble clic en cualquier navegador moderno (Chrome, Edge o Firefox). El archivo es autocontenido: funciona sin servidor y sin internet.
+**Sin conexión.** Descarga el repositorio y abre `dashboard_bhs_aifa.html` con doble clic en cualquier navegador moderno (Chrome, Edge o Firefox). Los datos están incrustados: funciona sin servidor y sin internet; conserva `assets/` para el logotipo y `data/` para el enlace al Excel.
 
 > Ambas rutas ejecutan exactamente el mismo archivo. La dirección del sitio (`index.html`) solo redirige al tablero, de modo que no existen copias que sincronizar.
 
@@ -24,11 +24,29 @@ Proyecto de residencia profesional. El tablero está orientado al monitoreo, an�
 `Datos` → **Cargar archivo CSV** (o arrastra el archivo a la zona de carga).
 
 - Formato admitido: **CSV** con separador coma, punto y coma o tabulador; codificación UTF-8 recomendada.
-- Los archivos `.xlsx` no pueden leerse sin librerías externas: en Excel usa *Archivo → Guardar como → CSV UTF-8* y carga el resultado.
+- Para extractos SCADA `.xlsx`, usa el conversor de Python indicado abajo; el navegador no necesita librerías externas.
 - El botón **Descargar plantilla CSV** genera un archivo con los encabezados que el normalizador reconoce.
 - Columnas obligatorias: `Fecha` y `Hora de activación`. El resto son opcionales y se completan como *no identificado* cuando faltan.
 - Si faltan columnas obligatorias, el tablero lo indica y no sustituye los datos cargados.
-- **Restaurar datos DEMO** devuelve el conjunto simulado en cualquier momento.
+- **Restaurar datos precargados** devuelve los registros incrustados del archivo SCADA.
+
+Para actualizar la base desde la raíz del repositorio, con Python 3 y sin dependencias:
+
+```powershell
+python scripts/convertir_scada.py data/scada_11_al_28.xlsx
+```
+
+El conversor lee `Worksheet1`, interpreta día/mes/año y a. m./p. m. sin cambios de zona horaria, conserva los Status 7 y los reporta sin interpretarlos como cierre. El Excel original conserva todas las columnas; el JSON incrustado contiene las seis utilizadas por el tablero.
+
+La base anterior (2.000 renglones) se conserva en `data/scada_demo_anterior.json`. Para restaurarla:
+
+```powershell
+python scripts/convertir_scada.py data/scada_demo_anterior.json --demo
+```
+
+Cada instancia es `Tag + Active Time/Date`; Status 3 activa y Status 1 restablece, con la excepción vigente de liberación/reset de EMERGENCY STOP. Status 5 no interviene. NAT incluye equipos `NAT` seguidos de dígitos y `_CA_NAT`; IOC incluye equipos `IOC` seguidos de dígitos, también `PN_IOC`. No se agrupan activaciones simultáneas. Los KPI 1 y 2 excluyen NAT/IOC de sus indicadores, selectores, gráficas, porcentajes y comparaciones: su base es de 1.512 activaciones de paros parciales. Los 24 eventos NAT/IOC se conservan en Paros totales y en los datos. Priority 1–2 = CRÍTICA, 3–4 = MEDIA y 5 = BAJA. El catálogo de tipos se conserva. TTS01, TTS02, TTS03 y TTS04, incluidos sus subequipos, pertenecen al nivel 5.25, sección SORTEADORES.
+
+El archivo contiene 32.658 renglones y 11.647 activaciones; el catálogo admite 1.536 instancias, de las cuales 13 no tienen restablecimiento, 137 son Mantenimiento, 12 NAT y 12 IOC. Nivel/sección sin clasificar: 98 (6,38 %). Los dos Status 7 (filas 6951 y 23173) no cierran sus instancias; sus tipos de alarma quedan fuera del catálogo vigente.
 
 ### Filtros
 
@@ -121,7 +139,7 @@ El script está dividido en 13 bloques comentados:
 }
 ```
 
-No se asume definitiva. La función `normalizarConjunto()` traduce cualquier encabezado real al modelo interno mediante `MAPEO_COLUMNAS`, que acepta una lista de alias por campo. Los datos DEMO pasan por el mismo normalizador que un CSV cargado, de modo que la ruta de ingesta se ejercita siempre igual.
+No se asume definitiva. La función `normalizarConjunto()` traduce cualquier encabezado real al modelo interno mediante `MAPEO_COLUMNAS`, que acepta una lista de alias por campo. Los datos SCADA precargados se consolidan con `normalizarScada()`; los CSV del modelo interno se cargan mediante `normalizarConjunto()`.
 
 ### Dónde editar
 
@@ -130,7 +148,7 @@ Todo lo que depende de documentación del BHS está centralizado al inicio del s
 | Constante | Contenido |
 |---|---|
 | `NOMENCLATURA` | Alarmas, categorías, niveles, áreas, severidades, status, coordinadores |
-| `UMBRALES` | Valores de semáforo (DEMO) |
+| `UMBRALES` | Valores de semáforo (provisionales) |
 | `FORMULAS` | Tiempo de paro, criterio de cumplimiento y regla de exclusión |
 | `TURNOS` | Horas de corte, etiquetas y regla de fecha operativa |
 | `MAPEO_COLUMNAS` | Alias de encabezados aceptados al cargar CSV |
