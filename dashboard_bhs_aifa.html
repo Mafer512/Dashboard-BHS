@@ -33706,7 +33706,8 @@ var CONFIG_APP = {
   maxHorasEvento: 24
 };
 
-const UMBRAL_MANTENIMIENTO_MIN = 15;
+const DURACION_MINIMA_ALARMA_SEG = 40;
+const UMBRAL_MANTENIMIENTO_MIN = 25; // Mantenimiento desde el minuto 26 completo.
 
 /* -------------------------------------------------------------------------------------
    8. TURNOS - Turnos de 12 horas. Logica aislada para poder modificarla despues.
@@ -33797,6 +33798,10 @@ var UMBRALES = {
    Se aislan para que puedan modificarse cuando existan definiciones oficiales.
    ------------------------------------------------------------------------------------- */
 var FORMULAS = {
+  incluyeEnCalculos: function (reg) {
+    var minutos = reg.activa ? minutosTranscurridos(reg) : reg.tiempoRespuesta;
+    return typeof minutos === "number" && isFinite(minutos) && minutos >= DURACION_MINIMA_ALARMA_SEG / 60;
+  },
   /* KPI 2 - Tiempo de paro.
      DEFINICION DEMO: se considera tiempo de paro la duracion completa del evento
      (restablecimiento - activacion) unicamente cuando el registro esta clasificado
@@ -33806,26 +33811,26 @@ var FORMULAS = {
   tiempoParo: function (reg) {
     var esParo = (reg.clasificacion === "NAT" || reg.clasificacion === "IOC");
     if (!esParo) return 0;
-    if (reg.tiempoRespuesta === null) return 0;
+    if (reg.tiempoRespuesta === null || !FORMULAS.incluyeEnCalculos(reg)) return 0;
     return reg.tiempoRespuesta;
   },
   /* KPI 3 - Tiempo de respuesta = hora de restablecimiento - hora de activacion.
      Se calcula en la funcion minutosEntre(); aqui se declara la regla de exclusion. */
   esMantenimiento: function (reg) {
-    return !reg.activa && !!reg.horaRestablecimiento && reg.tiempoRespuesta > UMBRAL_MANTENIMIENTO_MIN
+    return !reg.activa && !!reg.horaRestablecimiento && reg.tiempoRespuesta >= UMBRAL_MANTENIMIENTO_MIN + 1
       && reg.clasificacion !== "NAT" && reg.clasificacion !== "IOC"
       && reg.tipoAlarma !== "NAT" && reg.tipoAlarma !== "IOC";
   },
   incluyeEnTiempoRespuesta: function (reg) {
     return !reg.activa && !!reg.horaRestablecimiento && reg.tiempoRespuesta !== null
-      && reg.tiempoRespuesta >= 0 && !FORMULAS.esMantenimiento(reg);
+      && FORMULAS.incluyeEnCalculos(reg) && !FORMULAS.esMantenimiento(reg);
   },
   /* KPI 4 - Cumplimiento operativo.
      DEFINICION DEMO: un registro cumple si su tiempo de respuesta es menor o igual al
      objetivo. Los registros activos no se consideran en la base de calculo, se reportan
      por separado para no distorsionar el porcentaje. */
   cumple: function (reg) {
-    if (reg.tiempoRespuesta === null) return null;
+    if (reg.tiempoRespuesta === null || !FORMULAS.incluyeEnCalculos(reg)) return null;
     return reg.tiempoRespuesta <= UMBRALES.tiempoRespuesta.objetivo;
   }
 };
@@ -33888,7 +33893,7 @@ var FICHAS_INDICADORES = [
   {
     nombre: "Frecuencia de alarmas",
     descripcion: "Numero de veces que se activa una alarma determinada durante el periodo consultado.",
-    formula: "Frecuencia = conteo de registros de la alarma seleccionada en el periodo filtrado.",
+    formula: "Frecuencia = conteo de registros de la alarma seleccionada en el periodo filtrado con al menos " + DURACION_MINIMA_ALARMA_SEG + " segundos de activacion.",
     unidad: "Activaciones.",
     fuente: "Registro historico de alarmas (SCADA / SQL MV). Datos SCADA precargados o archivo CSV cargado.",
     campos: "fecha, horaActivacion, tipoAlarma.",
@@ -33914,7 +33919,7 @@ var FICHAS_INDICADORES = [
     fuente: "Registro historico de alarmas.",
     campos: "fecha, horaActivacion, horaRestablecimiento, nivel, area, tipoAlarma.",
     umbral: "Provisional: hasta " + UMBRALES.tiempoRespuesta.normal + " min = normal; hasta " + UMBRALES.tiempoRespuesta.atencion + " min = atencion; por encima = critico.",
-    interpretacion: "Se analiza por nivel, area y tipo de alarma de forma independiente. Los registros sin restablecimiento se excluyen del calculo y se reportan como alarmas activas. Se excluyen de los tiempos de respuesta las alarmas con duracion mayor a " + UMBRAL_MANTENIMIENTO_MIN + " min (Mantenimiento), salvo NAT e IOC."
+    interpretacion: "Se analiza por nivel, area y tipo de alarma de forma independiente. Solo se consideran activaciones de al menos " + DURACION_MINIMA_ALARMA_SEG + " segundos. Los registros sin restablecimiento se excluyen del calculo y se reportan como alarmas activas. Se excluyen de los tiempos de respuesta las alarmas con duracion de " + (UMBRAL_MANTENIMIENTO_MIN + 1) + " min o mas (Mantenimiento), salvo NAT e IOC."
   },
   {
     nombre: "Cumplimiento operativo",
@@ -34678,7 +34683,7 @@ function ventanasComparacion(modo, periodo) {
 function registrosEnVentana(ventana) {
   var f = filtrosSinFecha();
   f.fechaIni = ventana.ini; f.fechaFin = ventana.fin;
-  return filtrar(ESTADO.registros, f);
+  return filtrar(ESTADO.registros, f).filter(FORMULAS.incluyeEnCalculos);
 }
 
 /* =====================================================================================
@@ -34687,6 +34692,7 @@ function registrosEnVentana(ventana) {
 
 /* Nucleo de calculo: recibe un conjunto de registros y devuelve todos los indicadores */
 function calcularIndicadores(regs) {
+  regs = regs.filter(FORMULAS.incluyeEnCalculos);
   var i, r;
   var resueltos = [], activas = [], enAtencion = [], criticas = [], conError = [];
   var tiempos = [], mantenimiento = [], paroNat = [], paroIoc = [];
@@ -35568,7 +35574,7 @@ function etiquetaSeveridad(s) {
   var c = s === "CRITICA" ? "e-critica" : (s === "MEDIA" ? "e-media" : (s === "BAJA" ? "e-baja" : "e-nd"));
   return '<span class="etq ' + c + '">' + esc(s || "N/D") + "</span>";
 }
-/* 32. Tiempo transcurrido de una alarma activa. Solo referencia de seguimiento. */
+/* 32. Tiempo transcurrido de una alarma activa; valida el minimo para contarla, sin inventar un cierre. */
 function minutosTranscurridos(reg) {
   if (!reg.activa || !reg.fecha || !reg.horaActivacion) return null;
   var inicio = fechaDeIso(reg.fecha).getTime() + horaASegundos(reg.horaActivacion) * 1000;
@@ -35782,7 +35788,7 @@ function esAlarmaParcial(reg) {
     && reg.tipoAlarma !== "NAT" && reg.tipoAlarma !== "IOC";
 }
 function renderKpis() {
-  var regs = ESTADO.filtrados.filter(esAlarmaParcial);
+  var regs = ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos).filter(esAlarmaParcial);
   var ant = ESTADO.anteriores.filter(esAlarmaParcial);
   var parciales = calcularIndicadores(regs);
 
@@ -36096,7 +36102,7 @@ function renderRespuestaPorTurno(regs, textoNivel, alarmaSel) {
   niv.value = ESTADO.ui.nivelRespuesta;
   $("kpi3Alarma").value = alarmaSel;
 
-  var totalPeriodo = ESTADO.filtrados.filter(esAlarmaParcial).length;
+  var totalPeriodo = ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos).filter(esAlarmaParcial).length;
   var alarmas = rankear(agrupar(regs, function (r) { return r.tipoAlarma; }), function (items) { return items.length; });
   alarmas.forEach(function (g) { g.promedio = calcularIndicadores(g.items).trProm; });
   alarmas.sort(function (a, b) {
@@ -36212,7 +36218,7 @@ function pintarRanking(items) {
 /* Paneles inferiores del Resumen segun el KPI activo. Usan el periodo y los filtros
    generales (ESTADO.filtrados) y las mismas reglas de calculo de cada KPI. */
 function renderPanelesKpi() {
-  var regs = ESTADO.filtrados;
+  var regs = ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos);
   var tab = ESTADO.ui.kpiTab;
   if (tab === "2") regs = periodoParo() ? registrosEnVentana(periodoParo()) : [];
   if (tab === "1" || tab === "3") regs = regs.filter(esAlarmaParcial);
@@ -36397,7 +36403,7 @@ function renderComparacion() {
 /* ---------- SECCION DESEMPENO ---------- */
 /* 14. Seleccion en cascada: Nivel -> Area/Subcategoria -> Tipo de alarma */
 function registrosDesempeno() {
-  var regs = ESTADO.filtrados;
+  var regs = ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos);
   var u = ESTADO.ui;
   if (u.nivelDes !== "__TODOS__") regs = regs.filter(function (r) { return String(r.nivel) === String(u.nivelDes); });
   if (u.areaDes !== "__TODAS__") regs = regs.filter(function (r) { return r.area === u.areaDes; });
@@ -36542,8 +36548,8 @@ function renderDesempeno() {
 
 /* ---------- SECCION INCIDENCIAS ---------- */
 function renderIncidencias() {
-  var regs = ESTADO.filtrados;
-  var totalGlobal = ESTADO.registros.length;
+  var regs = ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos);
+  var totalGlobal = ESTADO.registros.filter(FORMULAS.incluyeEnCalculos).length;
 
   $("iTotal").textContent = numero(IND.total);
   $("iTotalSub").textContent = IND.dias + " dias con registro";
@@ -36573,6 +36579,7 @@ function renderIncidencias() {
 
 /* ---------- SECCION TENDENCIAS ---------- */
 function valorIndicador(items, indicador) {
+  items = items.filter(FORMULAS.incluyeEnCalculos);
   var ind = calcularIndicadores(items);
   switch (indicador) {
     case "frecuencia":
@@ -36600,7 +36607,7 @@ function formatoIndicador(indicador) {
   return "entero";
 }
 function renderTendencias() {
-  var regs = ESTADO.filtrados;
+  var regs = ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos);
   var u = ESTADO.ui;
   var gran = u.granularidad;
   var indicador = u.indicadorTend;
@@ -36994,7 +37001,7 @@ async function cargarDatosDesdeAPI(endpoint) {
    BLOQUE 12 - 34. RESUMEN PARA REPORTE TECNICO
    ===================================================================================== */
 function construirReporte() {
-  var regs = ESTADO.filtrados;
+  var regs = ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos);
   var f = ESTADO.filtros;
   var rankAlarmas = rankear(agrupar(regs, function (r) { return r.tipoAlarma; }), function (it) { return it.length; }).slice(0, 5);
   var rankAreas = rankear(agrupar(regs, function (r) { return r.area; }), function (it) { return it.length; }).slice(0, 5);
@@ -37565,11 +37572,11 @@ function registrarEventos() {
   });
   $("buscaIncidencias").addEventListener("input", function () {
     TABLAS.incidencias.busqueda = this.value.trim(); TABLAS.incidencias.pagina = 1;
-    pintarTabla("incidencias", COLUMNAS_INCIDENCIAS, ESTADO.filtrados, "tablaIncidencias", "contadorIncidencias", "pagIncidencias");
+    pintarTabla("incidencias", COLUMNAS_INCIDENCIAS, ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos), "tablaIncidencias", "contadorIncidencias", "pagIncidencias");
   });
   $("porPaginaIncidencias").addEventListener("change", function () {
     TABLAS.incidencias.porPagina = Number(this.value); TABLAS.incidencias.pagina = 1;
-    pintarTabla("incidencias", COLUMNAS_INCIDENCIAS, ESTADO.filtrados, "tablaIncidencias", "contadorIncidencias", "pagIncidencias");
+    pintarTabla("incidencias", COLUMNAS_INCIDENCIAS, ESTADO.filtrados.filter(FORMULAS.incluyeEnCalculos), "tablaIncidencias", "contadorIncidencias", "pagIncidencias");
   });
 
   // Carga de archivo
